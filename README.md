@@ -4,6 +4,8 @@ Corporate semantic release for private projects under corporation network.
 
 It contains all expected features by [semantic-release](https://github.com/semantic-release/semantic-release) but will not publish to **npmjs** at the end. 
 
+Obviously this project is 100% inspired by semantic release.
+
 
 ## Actions performed
 
