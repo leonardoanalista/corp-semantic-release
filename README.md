@@ -1,4 +1,4 @@
-# corp-semantic-release - Work-in-progress.
+# corp-semantic-release - Work-in-progress. Code will be pushed shortly.
 
 Corporate semantic release for private projects under corporation network.
 
@@ -23,10 +23,23 @@ run: `npm install corp-semantic-release --save-dev`
 
 ## Configure
 
+Add this script to your `package.json`
+
+```
+  "scripts": {
+    "release": "node ./node_modules/index.js"
+  }
+```
+Of course you can give any name you like.
 
 ## Options
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration hsould be done in your workspace.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.  
 
+**NOTE**: if you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.:
+
+`npm run publush -- -v -d`
+
+
 ## Contribute
-As usual, the same as [cz-customizable]()
+As usual, the same as [cz-customizable](https://github.com/leonardoanalista/cz-customizable#contributing) and any other project I work on.
