@@ -9,7 +9,8 @@
   },
   "scripts": {
     "lint": "node_modules/eslint/bin/eslint.js *.js test/**.js",
-    "test": "node_modules/mocha/bin/mocha"
+    "test": "node_modules/mocha/bin/mocha",
+    "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec"
   },
   "repository": {
     "type": "git",
@@ -36,6 +37,7 @@
     "chai": "3.5.0",
     "cz-customizable": "2.7.1",
     "eslint": "1.9.0",
+    "istanbul": "0.4.2",
     "mocha": "2.4.5"
   },
   "config": {
