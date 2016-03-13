@@ -14,6 +14,8 @@ const _successFn = chalk.bold.green;
 const _infoFn = chalk.bold.cyan;
 const LOG = console.log;
 
+var code; //exit code for shell commands. If it is !== 0 we abort the process.
+
 // TODO: change to spread operator and default param value when node supports
 const info = function(msg, obj) {
   obj = obj || '';
@@ -45,26 +47,26 @@ if (program.dryrun) {
 const latestTag = getLatestTag();
 
 
-// ### Get Commits
-const jsonCommits = getJsonCommits();
+// ### STEP 2 - Get Commits
+const jsonCommits = getJsonCommits(latestTag);
 
 
-// ### find out Bump type
+// ### STEP 3 - find out Bump type
 const bumpType = whatBumpFn(jsonCommits);
+info('>>> Bump type is: ', bumpType);
 
-
-// ### release or not?
+// ### STEP 4 - release or not?
 if (!isReleaseNecessary(bumpType, latestTag)) exit(0);
 
 
-// ### bump version in package.json
+// ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
 const newVersion = bumpUpVersion(bumpType);
 
-// ## create CHANGELOG.md
+// ### STEP 6 - create CHANGELOG.md
 generateChangelog();
 
 
-//### Destrucive oprations in this function
+//### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
 addFilesAndCreateTag(newVersion);
 
 
@@ -73,19 +75,26 @@ addFilesAndCreateTag(newVersion);
 
 function getLatestTag() {
   const latestTagOutput = exec('git-latest-semver-tag', {silent:true}).output.split('\n')[0];
-  var latestTag;
+
+  let latestTag;
   if (!latestTagOutput.startsWith('v')) {
     latestTag = 'HEAD';
+    info('>> No SemVer tag found. It seems like your first release?');
   } else {
     latestTag = latestTagOutput + '..HEAD';
+
+    if (program.verbose) info('>> Your latest semantic tag is: ', latestTag);
   }
-  if (program.verbose) info('>> Your latest semantic tag is: ', latestTag);
 
   return latestTag;
 }
 
-function getJsonCommits() {
+function getJsonCommits(latestTag) {
   const commits = exec(`git log --no-merges --pretty=%B ${latestTag} | conventional-commits-parser`, {silent: true}).output;
+
+  console.info('>>> COMMITSS: ', commits);
+  // if (program.verbose) info('>> Commits: \n', commits);
+
   if (!commits) {
     info('You have no commits, therefore nothing to be done here.', commits);
     exit(0);
@@ -105,35 +114,34 @@ function addFilesAndCreateTag(newVersion) {
 
 
   // ###### TAG NEW VERSION #####
-  info('>> Time to create tag...');
+  info(`>> Time to create the Semantic Tag: ${newVersion}`);
   code = exec('git tag ' + newVersion).code;
   terminateProcess(code);
 
-  // info('\n\n\n>> Would you mind to manually run the following commands until this script gets stable?', '\n> git commit -m "chore(release): ' + newVersion + '" && git push && git push --tags\n\n');
-
-
-  // ##################### NOTE ####
-  // when this scritp is reliable, we can automate the steps: "git commit" and "push --tags"
-  // ###############################
-
   // ###### Commit files #####
-  code = exec('git commit -m "chore(release):' + newVersion + '"').code;
+  code = exec('git commit -m "chore(release): ' + newVersion + '"').code;
   terminateProcess(code);
 
-  info('>> ... and push to remote...');
+  info('>>...and push to remote...');
   exec('git push --tags').output;
 }
 
 
+
+function fromNodeModule(value) {
+  return `${__dirname}/node_modules/${value}`;
+}
+
 function generateChangelog() {
   // ###### Generate CHANGELOG contents #####
-  console.log(chalk.bold.cyan('>>> about to generate CHANGELOG.md from last TAG until now...'));
+  console.log(chalk.bold.cyan('>>> about to generate CHANGELOG.md from last SemVer TAG...'));
   if (!program.dryrun) {
-    code = exec('node node_modules/conventional-changelog-cli/cli.js -p angular -i CHANGELOG.md -s').code;
+    code = exec(`node ${fromNodeModule('conventional-changelog-cli/cli.js')} -p angular -i CHANGELOG.md -s`).code;
     terminateProcess(code);
   } else {
     // print out changelog in console and exit
-    exec('node node_modules/conventional-changelog-cli/cli.js -p angular -i CHANGELOG.md');
+    exec(`node ${fromNodeModule('conventional-changelog-cli/cli.js')} -p angular -i CHANGELOG.md`).output;
+
     exit(0); // DRY RUN STOPS HERE
   }
 }
@@ -143,8 +151,12 @@ function bumpUpVersion(bumpType) {
   // ###### INCREASE VERSION #####
   if (!program.dryrun) {
     console.log(chalk.bold.cyan('>>> update version on package.json...'));
-    var newVersion = exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
-    return newVersion;
+    try {
+      var newVersion = exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
+      return newVersion;
+    } catch(error) {
+      terminateProcess(1);
+    }
   }
 }
 
@@ -159,9 +171,10 @@ function isReleaseNecessary(bumpType, latestTag) {
     if (program.verbose) {
       info('COMMIT LIST SINCE YOUR LATEST TAG:\n');
       if (latestTag !== 'HEAD') {
-        exec('node node_modules/git-raw-commits/cli.js --from ' + latestTag).output;
+        // exec('node node_modules/git-raw-commits/cli.js --from ' + latestTag).output;
+        exec(`node ${fromNodeModule('git-raw-commits/cli.js')} --from ${latestTag}`).output;
       } else {
-        exec('node node_modules/git-raw-commits/cli.js').output;
+        exec(`node ${fromNodeModule('git-raw-commits/cli.js')}`).output;
       }
     }
     return false;

@@ -16,16 +16,10 @@ module.exports = {
   ],
 
   scopes: [
-    // {name: 'accounts'},
-    // {name: 'admin'},
-    // {name: 'app'},
-    // {name: 'build'},
-    // {name: 'others'}
   ],
 
   scopeOverrides: {
   },
-
 
   allowCustomScopes: true
 

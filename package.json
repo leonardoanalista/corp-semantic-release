@@ -8,7 +8,8 @@
     "npm": ">= 2.0.0"
   },
   "scripts": {
-    "eslint": "node_modules/eslint/bin/eslint.js *.js spec/**.js"
+    "lint": "node_modules/eslint/bin/eslint.js *.js test/**.js",
+    "test": "node_modules/mocha/bin/mocha"
   },
   "repository": {
     "type": "git",
@@ -28,15 +29,21 @@
     "conventional-changelog-cli": "1.1.1",
     "conventional-commits-parser": "1.0.1",
     "git-raw-commits": "1.1.0",
-    "shelljs": "0.6.0"
+    "shelljs": "0.6.0",
+    "temp": "0.8.3"
   },
   "devDependencies": {
+    "chai": "3.5.0",
     "cz-customizable": "2.7.1",
-    "eslint": "1.9.0"
+    "eslint": "1.9.0",
+    "mocha": "2.4.5"
   },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-customizable"
     }
+  },
+  "bin": {
+    "corp-semantic-release": "index.js"
   }
 }
