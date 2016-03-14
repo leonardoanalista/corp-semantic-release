@@ -1,5 +1,8 @@
 {
   "version": "1.0.0",
   "name": "corp-semantic-release-test",
-  "author": "leonardoanalista"
+  "author": "leonardoanalista",
+  "scripts": {
+    "set-version": "echo 'this is my pre-commit script'"
+  }
 }

@@ -35,6 +35,7 @@ const error = function(msg, obj) {
 program
   .version(pkg.version)
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
+  .option('--pre-commit [pre-commit]', 'Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: npm run [pre-commit]')
   .option('-v, --verbose', 'Prints debug info')
   .parse(process.argv);
 
@@ -42,6 +43,8 @@ program
 if (program.dryrun) {
   console.info(chalk.bold.bgGreen.white('>> YOU ARE RUNNING IN DRY RUN MODE. NO CHANGES WILL BE MADE <<'));
 }
+
+
 
 
 // ### STEP 1 - Work out tags
@@ -54,7 +57,7 @@ const jsonCommits = getJsonCommits(latestTag);
 
 // ### STEP 3 - find out Bump type
 const bumpType = whatBumpFn(jsonCommits);
-info('>>> Bump type is: ', bumpType);
+
 
 // ### STEP 4 - release or not?
 if (!isReleaseNecessary(bumpType, latestTag)) exit(0);
@@ -67,12 +70,23 @@ const newVersion = bumpUpVersion(bumpType);
 generateChangelog();
 
 
-//### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
+// ### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
+runPreCommitScript(program.preCommit);
+
+//### STEP 8 - Tag and push (DESTRUCTIVE OPERATION)
 addFilesAndCreateTag(newVersion);
 
 
 
 // #################### Helpers ################### //
+
+function runPreCommitScript(script) {
+  if (script) {
+    info(`>>> about to run your "pre-commit" script called $"{script}. Command is: npm run ${script}`);
+    exec(`npm run ${script}`).output;
+  }
+}
+
 
 function getLatestTag() {
   const latestTagOutput = exec('git-latest-semver-tag', {silent:true}).output.split('\n')[0];
@@ -170,11 +184,10 @@ function isReleaseNecessary(bumpType, latestTag) {
 
     if (program.verbose) {
       info('COMMIT LIST SINCE YOUR LATEST TAG:\n');
-      if (latestTag !== 'HEAD') {
-        // exec('node node_modules/git-raw-commits/cli.js --from ' + latestTag).output;
-        exec(`node ${fromNodeModule('git-raw-commits/cli.js')} --from ${latestTag}`).output;
-      } else {
+      if (latestTag.includes('HEAD')) {
         exec(`node ${fromNodeModule('git-raw-commits/cli.js')}`).output;
+      } else {
+        exec(`node ${fromNodeModule('git-raw-commits/cli.js')} --from ${latestTag}`).output;
       }
     }
     return false;
@@ -198,6 +211,8 @@ function whatBumpFn(commits) {
 
     if (!type && commit.type === 'fix') type = 'patch';
   });
+
+  info('>>> Bump type is: ', type);
 
   return type;
 }

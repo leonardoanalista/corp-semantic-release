@@ -4,7 +4,23 @@ Corporate semantic release for private projects under corporation network.
 
 It contains all expected features by [semantic-release](https://github.com/semantic-release/semantic-release) but will not publish to **npmjs** at the end.
 
-Obviously this project is 100% inspired by semantic release.
+Obviously this project is **100%** inspired by semantic release.
+
+
+
+
+[![Commitizen friendly](https://img.shields.io/badge/corp-semantic-release-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+
+[![Build Status](https://travis-ci.org/leonardoanalista/corp-semantic-release.svg)](https://travis-ci.org/leonardoanalista/corp-semantic-release)
+
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+
+<!--
+[![codecov.io](https://codecov.io/github/leonardoanalista/cz-customizable/coverage.svg?branch=master)](https://codecov.io/github/leonardoanalista/corp-semantic-release?branch=master)
+-->
+
+[![npm monthly downloads](https://img.shields.io/npm/dm/corp-semantic-release.svg?style=flat-square)](https://www.npmjs.com/package/corp-semantic-release)
+
 
 
 ## Actions performed
@@ -14,6 +30,7 @@ Obviously this project is 100% inspired by semantic release.
 * Read your commits from last semantic tag and generate or append contents to `CHANGELOG.md` file.
 * bump your `package.json` only
 * run `git add package.json CHANGELOG.md`
+* run any `pre-commit` script, if specified
 * run `git commit -m "chore(build): release v1.0.0"`
 * run `git tag v1.0.0`
 * run `git push`
@@ -40,6 +57,7 @@ Of course you can change `corp-release` to any name you like.
 
 ## Options
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
+* '--pre-commit [pre-commit]': Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: `npm run [pre-commit]`. If you need more hooks to be implemented please open an issue.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 
 **NOTE**: if you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.:
@@ -91,9 +109,15 @@ const newVersion = bumpUpVersion(bumpType);
 // ### STEP 6 - create CHANGELOG.md
 generateChangelog();
 
-//### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
+// ### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
+runPreCommitScript(program.preCommit);
+
+//### STEP 8 - Tag and push (DESTRUCTIVE OPERATION)
 addFilesAndCreateTag(newVersion);
+
 ```
+
+
 ### I can't get over: I really have corp proxies
 
 You are not the only one. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**.

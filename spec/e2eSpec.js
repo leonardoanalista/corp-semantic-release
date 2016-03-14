@@ -76,6 +76,14 @@ describe('corp-semantic-release', function () {
   });
 
 
+  it('should run pre-commit script if required', function () {
+    commitFeat();
+    const out = shell.exec(`node ${__dirname}/../index.js -v --pre-commit set-version`).output;
+    const expectedVersion = '1.1.0';
+
+    expect(out).to.include(`this is my pre-commit script`);
+  });
+
   it('should bump Major version due to Breaking Change and append contents to CHANGELOG.md', function () {
     // pre-conditions
     shell.cp(__dirname + '/../testData/CHANGELOG.md', tempDir);
@@ -107,6 +115,8 @@ describe('corp-semantic-release', function () {
     const gitStatus = shell.exec(`git status`).output;
     expect(gitStatus).to.include('nothing to commit, working directory clean');
   });
+
+
 
   // ####### Helpers ######
 
