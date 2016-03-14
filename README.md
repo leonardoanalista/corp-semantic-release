@@ -53,23 +53,24 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 
 
 ## TODO - Roadmap:
-* build cli tool (I am reading up to learn this)
+* improve cli tool (I am reading up to learn this)
 * add option to create release on GitHub using API v3. I am sure one day the corps will be using version 3.
-* write unit tests
+* split cli tool and write unit tests for functions.
 * make code fully functional with Immutable.js and Ramda.
 
 
-# FAQ
-* I work in a corporation and proxy there is a pain in the azz?
+## FAQ
+
+### I work in a corporation and proxy there is a pain in the azz?
 This npm module has been built exclusively for you. I also couldn't pass the setup stage of `semantic-release` inside a corporation network.
 
-* how can I setup `corp-semantic-release`?
+### how can I setup `corp-semantic-release`?
 run `npm install corp-semantic-release`. There is no wizard like semantic-release.
 
-* Can I trust 'corp-semantic-release'?
+### Can I trust 'corp-semantic-release'?
 Take a look at the file `test/e2eSpec.js`. It has comprehensive e2e tests in order to make sure it works as expected.
 
-* how is the pipeline of actions different to `semantic-release`?
+### how is the pipeline of actions different to `semantic-release`?
 `corp-semantic-release` will not publish to `npmjs.com`. Here are the actions performed (copy & paste from code):
 ```
 // ### STEP 1 - Work out tags
@@ -93,6 +94,7 @@ generateChangelog();
 //### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
 addFilesAndCreateTag(newVersion);
 ```
-* I can't get over: I really have corp proxies
+### I can't get over: I really have corp proxies
+
 You are not the only one. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**.
 This is how I get things working. If you need further instructions on cntlm, send me a message.
