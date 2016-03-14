@@ -1,6 +1,5 @@
 {
   "name": "corp-semantic-release",
-  "version": "0.0.1",
   "description": "Corporate semantic release for private projects under corporation network.",
   "main": "index.js",
   "engines": {
@@ -13,11 +12,12 @@
     "test": "node_modules/jasmine-node/bin/jasmine-node spec/",
     "test:coverage": "istanbul cover -x cz-config-EXAMPLE.js node_modules/jasmine-node/bin/jasmine-node spec/",
     "test:check-coverage": "istanbul check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
-    "test:watch": "node_modules/jasmine-node/bin/jasmine-node --color --autotest spec/ --watch ."
+    "test:watch": "node_modules/jasmine-node/bin/jasmine-node --color --autotest spec/ --watch .",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/leonardoanalista/corp-semantic-release.git"
+    "url": "https://github.com/leonardoanalista/corp-semantic-release.git"
   },
   "keywords": [],
   "author": "leonardoanalista",
@@ -40,7 +40,8 @@
     "cz-customizable": "2.7.1",
     "eslint": "1.9.0",
     "istanbul": "0.4.2",
-    "jasmine-node": "1.14.5"
+    "jasmine-node": "1.14.5",
+    "semantic-release": "4.3.5"
   },
   "config": {
     "commitizen": {

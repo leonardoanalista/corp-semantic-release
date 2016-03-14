@@ -39,7 +39,7 @@ Of course you can change `corp-release` to any name you like.
 
 
 ## Options
-* `-d` or `--dryrun`: it runs in non-destructive mode. No alteration hsould be done in your workspace.
+* `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 
 **NOTE**: if you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.:
@@ -58,3 +58,41 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 * write unit tests
 * make code fully functional with Immutable.js and Ramda.
 
+
+# FAQ
+* I work in a corporation and proxy there is a pain in the azz?
+This npm module has been built exclusively for you. I also couldn't pass the setup stage of `semantic-release` inside a corporation network.
+
+* how can I setup `corp-semantic-release`?
+run `npm install corp-semantic-release`. There is no wizard like semantic-release.
+
+* Can I trust 'corp-semantic-release'?
+Take a look at the file `test/e2eSpec.js`. It has comprehensive e2e tests in order to make sure it works as expected.
+
+* how is the pipeline of actions different to `semantic-release`?
+`corp-semantic-release` will not publish to `npmjs.com`. Here are the actions performed (copy & paste from code):
+```
+// ### STEP 1 - Work out tags
+const latestTag = getLatestTag();
+
+// ### STEP 2 - Get Commits
+const jsonCommits = getJsonCommits(latestTag);
+
+// ### STEP 3 - find out Bump type
+const bumpType = whatBumpFn(jsonCommits);
+
+// ### STEP 4 - release or not?
+if (!isReleaseNecessary(bumpType, latestTag)) exit(0);
+
+// ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
+const newVersion = bumpUpVersion(bumpType);
+
+// ### STEP 6 - create CHANGELOG.md
+generateChangelog();
+
+//### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
+addFilesAndCreateTag(newVersion);
+```
+* I can't get over: I really have corp proxies
+You are not the only one. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**.
+This is how I get things working. If you need further instructions on cntlm, send me a message.
