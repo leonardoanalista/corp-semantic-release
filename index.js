@@ -2,6 +2,7 @@
 
 'use strict';
 
+
 const CWD = process.cwd();
 const shelljs = require('shelljs/global');
 const chalk = require('chalk');
@@ -14,7 +15,7 @@ const _successFn = chalk.bold.green;
 const _infoFn = chalk.bold.cyan;
 const LOG = console.log;
 
-var code; //exit code for shell commands. If it is !== 0 we abort the process.
+// var code; //exit code for shell commands. If it is !== 0 we abort the process.
 
 // TODO: change to spread operator and default param value when node supports
 const info = function(msg, obj) {
@@ -92,7 +93,6 @@ function getLatestTag() {
 function getJsonCommits(latestTag) {
   const commits = exec(`git log --no-merges --pretty=%B ${latestTag} | conventional-commits-parser`, {silent: true}).output;
 
-  console.info('>>> COMMITSS: ', commits);
   // if (program.verbose) info('>> Commits: \n', commits);
 
   if (!commits) {
@@ -109,17 +109,17 @@ function addFilesAndCreateTag(newVersion) {
 
   // ###### Add edited files to git #####
   info('>>> About to add and commit package.js and CHANGELOG...');
-  code = exec('git add package.json CHANGELOG.md').code;
+  var code = exec('git add package.json CHANGELOG.md').code;
   terminateProcess(code);
 
 
   // ###### TAG NEW VERSION #####
   info(`>> Time to create the Semantic Tag: ${newVersion}`);
-  code = exec('git tag ' + newVersion).code;
+  var code = exec('git tag ' + newVersion).code;
   terminateProcess(code);
 
   // ###### Commit files #####
-  code = exec('git commit -m "chore(release): ' + newVersion + '"').code;
+  var code = exec('git commit -m "chore(release): ' + newVersion + '"').code;
   terminateProcess(code);
 
   info('>>...and push to remote...');
@@ -136,7 +136,7 @@ function generateChangelog() {
   // ###### Generate CHANGELOG contents #####
   console.log(chalk.bold.cyan('>>> about to generate CHANGELOG.md from last SemVer TAG...'));
   if (!program.dryrun) {
-    code = exec(`node ${fromNodeModule('conventional-changelog-cli/cli.js')} -p angular -i CHANGELOG.md -s`).code;
+    let code = exec(`node ${fromNodeModule('conventional-changelog-cli/cli.js')} -p angular -i CHANGELOG.md -s`).code;
     terminateProcess(code);
   } else {
     // print out changelog in console and exit

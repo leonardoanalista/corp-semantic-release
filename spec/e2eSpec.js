@@ -1,6 +1,14 @@
 'use strict';
 
-// var concat = require('concat-stream');
+/*
+  NOTE: This is teh End-2-end test.
+  - before every test: it created a git repo in a temp directory
+  - test cases set pre-conditions. Eg.: commit messages, add files
+  - test cases run corp-semantic-release
+  - test cases will verify the state of Git
+  - after every test, temp dir and git repo are deleted.
+*/
+
 var expect = require('chai').expect;
 var shell = require('shelljs');
 var spawn = require('child_process').spawn;
@@ -9,11 +17,8 @@ var readFileSync = fs.readFileSync;
 var writeFileSync = fs.writeFileSync;
 var temp = require('temp').track();
 
-//var cliPath = __dirname + '/../cli.js';
-
 
 describe('corp-semantic-release', function () {
-  this.timeout(15000);
 
   // temp dir created for testing.
   // New git repo will be created here
@@ -31,7 +36,6 @@ describe('corp-semantic-release', function () {
     shell.cd(tempDir);
 
     shell.exec('git init');
-    // shell.exec('git init --template=./git-templates');
   });
 
   afterEach(function () {
@@ -39,6 +43,7 @@ describe('corp-semantic-release', function () {
     shell.rm('-rf', tempDir);
     tempDir = null;
   });
+
 
 
   it('should not change anything in dry mode', function () {

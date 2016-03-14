@@ -9,8 +9,11 @@
   },
   "scripts": {
     "lint": "node_modules/eslint/bin/eslint.js *.js test/**.js",
-    "test": "node_modules/mocha/bin/mocha",
-    "cover": "istanbul cover node_modules/mocha/bin/_mocha -- -R spec"
+    "zzzzztest": "node_modules/mocha/bin/mocha",
+    "test": "node_modules/jasmine-node/bin/jasmine-node spec/",
+    "test:coverage": "istanbul cover -x cz-config-EXAMPLE.js node_modules/jasmine-node/bin/jasmine-node spec/",
+    "test:check-coverage": "istanbul check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
+    "test:watch": "node_modules/jasmine-node/bin/jasmine-node --color --autotest spec/ --watch ."
   },
   "repository": {
     "type": "git",
@@ -34,11 +37,10 @@
     "temp": "0.8.3"
   },
   "devDependencies": {
-    "chai": "3.5.0",
     "cz-customizable": "2.7.1",
     "eslint": "1.9.0",
     "istanbul": "0.4.2",
-    "mocha": "2.4.5"
+    "jasmine-node": "1.14.5"
   },
   "config": {
     "commitizen": {
