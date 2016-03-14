@@ -61,16 +61,15 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 
 
 ## TODO - Roadmap:
-* improve cli tool (I am reading up to learn this)
-* add option to create release on GitHub using API v3. I am sure one day the corps will be using version 3.
 * split cli tool and write unit tests for functions.
+* add option to create release on Enterprise GitHub using API v3. I am sure one day the corps will be using version 3.
 * make code fully functional with Immutable.js and Ramda.
 
 
 ## FAQ
 
 ### I work in a corporation and proxy there is a pain in the azz?
-This npm module has been built exclusively for you. I also couldn't pass the setup stage of `semantic-release` inside a corporation network.
+This npm module has been built exclusively for you. I was unable to pass the setup stage of `semantic-release` inside a corporation network. This is why I created this package.
 
 ### how can I setup `corp-semantic-release`?
 run `npm install corp-semantic-release`. There is no wizard like semantic-release.
