@@ -9,9 +9,7 @@ Obviously this project is **100%** inspired by semantic release.
 
 
 
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)[![Build Status](https://travis-ci.org/leonardoanalista/corp-semantic-release.svg)](https://travis-ci.org/leonardoanalista/corp-semantic-release)[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)<!--
-[![codecov.io](https://codecov.io/github/leonardoanalista/cz-customizable/coverage.svg?branch=master)](https://codecov.io/github/leonardoanalista/corp-semantic-release?branch=master)
--->[![npm monthly downloads](https://img.shields.io/npm/dm/corp-semantic-release.svg?style=flat-square)](https://www.npmjs.com/package/corp-semantic-release)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)[![Build Status](https://travis-ci.org/leonardoanalista/corp-semantic-release.svg)](https://travis-ci.org/leonardoanalista/corp-semantic-release)[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)[![npm monthly downloads](https://img.shields.io/npm/dm/corp-semantic-release.svg?style=flat-square)](https://www.npmjs.com/package/corp-semantic-release)
 
 
 
