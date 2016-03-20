@@ -69,7 +69,7 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 ## FAQ
 
 ### I work in a corporation and proxy there is a pain in the azz?
-This npm module has been built exclusively for you. I was unable to pass the setup stage of `semantic-release` inside a corporation network. This is why I created this package.
+This npm module is for you. I was unable to pass the setup stage of `semantic-release` inside a corporation network. That was one of the reasons why I created this package.
 
 ### how can I setup `corp-semantic-release`?
 run `npm install corp-semantic-release`. There is no wizard like semantic-release.
@@ -78,36 +78,18 @@ run `npm install corp-semantic-release`. There is no wizard like semantic-releas
 Take a look at the file `test/e2eSpec.js`. It has comprehensive e2e tests in order to make sure it works as expected.
 
 ### how is the pipeline of actions different to `semantic-release`?
-`corp-semantic-release` will not publish to `npmjs.com`. Here are the actions performed (copy & paste from code):
-```
-// ### STEP 1 - Work out tags
-const latestTag = getLatestTag();
+`corp-semantic-release` will not publish to `npmjs.com`. Take a look at the file `index.js`. It contains a pipiline of actions like this:
 
-// ### STEP 2 - Get Commits
+```
+// ### STEP [1] - Work out tags
+...
+
+// ### STEP [n] - Get Commits
 const jsonCommits = getJsonCommits(latestTag);
 
-// ### STEP 3 - find out Bump type
-const bumpType = whatBumpFn(jsonCommits);
-
-// ### STEP 4 - release or not?
-if (!isReleaseNecessary(bumpType, latestTag)) exit(0);
-
-// ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
-const newVersion = bumpUpVersion(bumpType);
-
-// ### STEP 6 - create CHANGELOG.md
-generateChangelog();
-
-// ### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
-runPreCommitScript(program.preCommit);
-
-//### STEP 8 - Tag and push (DESTRUCTIVE OPERATION)
-addFilesAndCreateTag(newVersion);
-
 ```
 
 
-### I can't get over: I really have corp proxies
+### I can't get over: I really have corporate proxies.
 
-You are not the only one. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**.
-This is how I get things working. If you need further instructions on cntlm, send me a message.
+I totally understand your frustrations and you are not the only one. Proxy settings is not the purpuse of this project but I am happy to provide some help if I can. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**. This is how I get things working. If you need further instructions on cntlm, send me a message.
