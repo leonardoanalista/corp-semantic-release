@@ -17,6 +17,7 @@
     "module": true
   },
   "rules": {
+    "indent": [2, 2],
     "strict": [2, "global"],
     "quotes": [2, "single", "avoid-escape"],
     "eqeqeq": 1,

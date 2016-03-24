@@ -24,11 +24,10 @@ describe('corp-semantic-release', function () {
   // New git repo will be created here
   var tempDir;
 
-
   beforeEach(function () {
     tempDir = temp.path({prefix: 'corp-sem-rel-'});
 
-    shell.config.silent = true;
+    shell.config.silent = !process.env.npm_config_debug;
     shell.rm('-rf', tempDir);
     shell.mkdir(tempDir);
     shell.cp(__dirname + '/../testData/package.json', tempDir);
@@ -36,6 +35,10 @@ describe('corp-semantic-release', function () {
     shell.cd(tempDir);
 
     shell.exec('git init');
+
+    // travis ci needs it
+    shell.exec('git config user.email "leonardo@example.com"');
+    shell.exec('git config user.name "Leonardo C"');
   });
 
   afterEach(function () {

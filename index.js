@@ -7,8 +7,11 @@ const CWD = process.cwd();
 const shelljs = require('shelljs/global');
 const chalk = require('chalk');
 const program = require('commander');
-
 const pkg = require('./package.json');
+
+const path = require('path');
+const fs = require('fs');
+var prependFile = require('prepend-file');
 
 const _errorFn = chalk.bold.red;
 const _successFn = chalk.bold.green;
@@ -45,44 +48,139 @@ if (program.dryrun) {
 }
 
 
+try {
+  fs.statSync('package.json');
+} catch (e) {
+  error('Cant find your package.json.');
+  exit(1);
+}
+
 
 
 // ### STEP 1 - Work out tags
 const latestTag = getLatestTag();
 
-
 // ### STEP 2 - Get Commits
 const jsonCommits = getJsonCommits(latestTag);
-
 
 // ### STEP 3 - find out Bump type
 const bumpType = whatBumpFn(jsonCommits);
 
-
 // ### STEP 4 - release or not?
-if (!isReleaseNecessary(bumpType, latestTag)) exit(0);
+if (!isReleaseNecessary(bumpType, jsonCommits)) exit(0);
 
 
 // ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
 const newVersion = bumpUpVersion(bumpType);
 
-// ### STEP 6 - create CHANGELOG.md
-generateChangelog();
+
+// ### STEP 6 - ger changelog contents
+const changes = getChangelog();
+
+// ### STEP 7 - Write or Append (DESTRUCTIVE OPERATION)
+writeChangelog(changes); //it has to run after the version has been bumped.
 
 
-// ### STEP 7 - Tag and push (DESTRUCTIVE OPERATION)
+// ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
 runPreCommitScript(program.preCommit);
 
-//### STEP 8 - Tag and push (DESTRUCTIVE OPERATION)
+// ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
 addFilesAndCreateTag(newVersion);
-
 
 
 // #################### Helpers ################### //
 
+
+function getJsonCommits(latestTag) {
+  var rawCommits = exec(`git log -E --format=%H==SPLIT==%B==END== ${latestTag}`, {silent: true}).output;
+
+  var commits = rawCommits.split('==END==\n')
+    .filter(function (raw) {
+      return !!raw.trim();
+    }).map(function (raw) {
+      var data = raw.split('==SPLIT==');
+      return {
+        hash: data[0],
+        message: data[1]
+      };
+    });
+
+  var parsedCommits = commits.map(function (commit) {
+    var gitUtils = require('./gitUtils');
+    return gitUtils.parseRawCommit(commit.hash + '\n' + commit.message);
+  }).filter(function (commit) {
+    return !!commit;
+  });
+
+  return parsedCommits;
+}
+
+function whatBumpFn(parsedCommits) {
+  var type;
+
+  parsedCommits.every(function (commit) {
+    if (commit.breaks.length) {
+      type = 'major';
+      return false;
+    }
+
+    if (commit.type === 'feat') type = 'minor';
+
+    if (!type && commit.type === 'fix') type = 'patch';
+
+    return true;
+  });
+
+  info('>>> Bump type is', type);
+  return type;
+}
+
+function isReleaseNecessary(bumpType, parsedCommits) {
+  if (!bumpType || bumpType === '') {
+    success('\n\nRelease is not necessary at this point. Maybe your commits since your last tag only contains "docs", "style", "refactor", "test" and/or "chore"\n');
+
+    info('---> YOUR LATEST TAG: ', latestTag);
+    if (!program.verbose) info('Run this command again with -v or --verbose to see the commit list from last tag until HEAD.');
+
+    if (program.verbose) {
+      info('PARSED COMMIT LIST SINCE YOUR LATEST TAG:\n');
+
+      info('>>> parsedCommits: ', parsedCommits);
+    }
+    return false;
+  } else {
+
+    return true;
+  }
+}
+
+
+function getChangelog() {
+  const data = exec(`node ${fromNodeModule('conventional-changelog/cli.js')} -p angular`, {silent: true}).output;
+
+  if (program.dryrun) {
+    info('>>> Future and additional contents of CHANGELOG.md: \n', data);
+  }
+
+  return data;
+}
+
+function writeChangelog(data) {
+  if (program.dryrun) return;
+
+  var writeFileSync = fs.writeFileSync;
+
+  if (program.verbose) info('>>> About to write/append contents to CHANGELOG.md... ');
+
+  var fileName = path.join(process.cwd(), 'CHANGELOG.md');
+
+  prependFile.sync(fileName, data);
+}
+
+
 function runPreCommitScript(script) {
   if (script) {
-    info(`>>> about to run your "pre-commit" script called $"{script}. Command is: npm run ${script}`);
+    info(`>>> about to run your "pre-commit" script called "${script}". Command is: npm run ${script}`);
     exec(`npm run ${script}`).output;
   }
 }
@@ -104,25 +202,13 @@ function getLatestTag() {
   return latestTag;
 }
 
-function getJsonCommits(latestTag) {
-  const commits = exec(`git log --no-merges --pretty=%B ${latestTag} | conventional-commits-parser`, {silent: true}).output;
-
-  // if (program.verbose) info('>> Commits: \n', commits);
-
-  if (!commits) {
-    info('You have no commits, therefore nothing to be done here.', commits);
-    exit(0);
-  }
-
-  return JSON.parse(commits);
-}
 
 // It executes the release process pipeline
 function addFilesAndCreateTag(newVersion) {
   if (program.dryrun) exit(0);
 
   // ###### Add edited files to git #####
-  info('>>> About to add and commit package.js and CHANGELOG...');
+  info('>>> About to add and commit package.json and CHANGELOG...');
   var code = exec('git add package.json CHANGELOG.md').code;
   terminateProcess(code);
 
@@ -146,20 +232,6 @@ function fromNodeModule(value) {
   return `${__dirname}/node_modules/${value}`;
 }
 
-function generateChangelog() {
-  // ###### Generate CHANGELOG contents #####
-  console.log(chalk.bold.cyan('>>> about to generate CHANGELOG.md from last SemVer TAG...'));
-  if (!program.dryrun) {
-    let code = exec(`node ${fromNodeModule('conventional-changelog-cli/cli.js')} -p angular -i CHANGELOG.md -s`).code;
-    terminateProcess(code);
-  } else {
-    // print out changelog in console and exit
-    exec(`node ${fromNodeModule('conventional-changelog-cli/cli.js')} -p angular -i CHANGELOG.md`).output;
-
-    exit(0); // DRY RUN STOPS HERE
-  }
-}
-
 
 function bumpUpVersion(bumpType) {
   // ###### INCREASE VERSION #####
@@ -168,53 +240,10 @@ function bumpUpVersion(bumpType) {
     try {
       var newVersion = exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
       return newVersion;
-    } catch(error) {
+    } catch (error) {
       terminateProcess(1);
     }
   }
-}
-
-function isReleaseNecessary(bumpType, latestTag) {
-  if (!bumpType || bumpType === '') {
-    success('\n\nRelease is not necessary at this point. Maybe your commits since your last tag only contains "docs", "style", "refactor", "test" and/or "chore"\n');
-
-    info('---> YOUR LATEST TAG: ', latestTag);
-
-    if (!program.verbose) info('Run this command again with -v or --verbose to see the commit list from last tag until HEAD.');
-
-    if (program.verbose) {
-      info('COMMIT LIST SINCE YOUR LATEST TAG:\n');
-      if (latestTag.includes('HEAD')) {
-        exec(`node ${fromNodeModule('git-raw-commits/cli.js')}`).output;
-      } else {
-        exec(`node ${fromNodeModule('git-raw-commits/cli.js')} --from ${latestTag}`).output;
-      }
-    }
-    return false;
-  } else {
-    return true;
-  }
-}
-
-// ### figure out bump type ###
-function whatBumpFn(commits) {
-  // null: no release needed
-  var type = null;
-  commits.every(function (commit) {
-
-    if (commit.notes.length) {
-      type = 'major';
-      return false;
-    }
-
-    if (commit.type === 'feat') type = 'minor';
-
-    if (!type && commit.type === 'fix') type = 'patch';
-  });
-
-  info('>>> Bump type is: ', type);
-
-  return type;
 }
 
 
