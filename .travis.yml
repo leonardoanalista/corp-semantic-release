@@ -14,7 +14,7 @@ before_script:
 
 script:
   - npm run lint
-  - npm run test
+  - npm run test:debug
 
 after_success:
   - npm run semantic-release

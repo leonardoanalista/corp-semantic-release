@@ -120,6 +120,56 @@ describe('corp-semantic-release', function () {
   });
 
 
+  it('should NOT make any change when we run multiple times and there are no relevant commits', function () {
+    commitWithMessage('initial commit');
+    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    const expectedVersion = '1.0.0';
+
+    const gitStatus = shell.exec(`git status`).output;
+    expect(gitStatus).to.include('nothing to commit, working directory clean');
+
+    // no changes expected, no tags expected
+    const gitTag = shell.exec(`git tag | cat`).output;
+    expect(gitTag).to.equal('');
+    expectedVersionInPackageJson(expectedVersion);
+
+
+    // Then when I ran again
+    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    expectedVersionInPackageJson(expectedVersion);
+    expect(gitTag).to.equal('');
+    expectedVersionInPackageJson(expectedVersion);
+  });
+
+
+  it('should NOT make any change when we run multiple times and after a first minor release', function () {
+    commitWithMessage('feat(accounts): commit 1');
+    commitFixWithMessage('fix(exampleScope): add extra config');
+
+    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    const expectedVersion = '1.1.0';
+
+    // version 1.1.0 expected
+    var gitTag = shell.exec(`git tag | cat`).output;
+    expect(gitTag).to.equal(`v${expectedVersion}\n`);
+    expectedVersionInPackageJson(expectedVersion);
+
+    // then run again. The same version 1.1.0 expected
+    var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    var gitTag = shell.exec(`git tag | cat`).output;
+    expect(gitTag).to.equal(`v${expectedVersion}\n`);
+    expectedVersionInPackageJson(expectedVersion);
+    expect(out).to.include('Release is not necessary at this point');
+
+
+    // run once more. The same version 1.1.0 expected
+    var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    var gitTag = shell.exec(`git tag | cat`).output;
+    expect(gitTag).to.equal(`v${expectedVersion}\n`);
+    expectedVersionInPackageJson(expectedVersion);
+    expect(out).to.include('Release is not necessary at this point');
+
+  });
 
   // ####### Helpers ######
 
@@ -139,6 +189,10 @@ describe('corp-semantic-release', function () {
     commitWithMessage('chore: commit 03');
   }
 
+  function commitFixWithMessage(msg) {
+    writeFileSync('fix.txt', '');
+    commitWithMessageMultiline(`-m "${msg}"`);
+  }
 
   function commitFixWithBreakingChange() {
     writeFileSync('fix.txt', '');
