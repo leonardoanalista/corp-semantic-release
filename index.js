@@ -67,7 +67,9 @@ const jsonCommits = getJsonCommits(latestTag);
 const bumpType = whatBumpFn(jsonCommits);
 
 // ### STEP 4 - release or not?
-if (!isReleaseNecessary(bumpType, jsonCommits)) exit(0);
+if (!isReleaseNecessary(bumpType, jsonCommits)) {
+  exit(0);
+}
 
 
 // ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
@@ -147,6 +149,7 @@ function isReleaseNecessary(bumpType, parsedCommits) {
 
       info('>>> parsedCommits: ', parsedCommits);
     }
+
     return false;
   } else {
 
@@ -187,7 +190,7 @@ function runPreCommitScript(script) {
 
 
 function getLatestTag() {
-  const latestTagOutput = exec('git-latest-semver-tag', {silent:true}).output.split('\n')[0];
+  const latestTagOutput = exec(`node ${fromNodeModule('git-latest-semver-tag/cli.js')}`, {silent: false}).output.split('\n')[0];
 
   let latestTag;
   if (!latestTagOutput.startsWith('v')) {
@@ -244,6 +247,7 @@ function bumpUpVersion(bumpType) {
       terminateProcess(1);
     }
   }
+
 }
 
 
