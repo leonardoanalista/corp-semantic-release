@@ -39,6 +39,7 @@ program
   .version(pkg.version)
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
   .option('--pre-commit [pre-commit]', 'Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: npm run [pre-commit]')
+  .option('-b --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
   .option('-v, --verbose', 'Prints debug info')
   .parse(process.argv);
 
@@ -46,6 +47,8 @@ program
 if (program.dryrun) {
   console.info(chalk.bold.bgGreen.white('>> YOU ARE RUNNING IN DRY RUN MODE. NO CHANGES WILL BE MADE <<'));
 }
+
+program.branch = program.branch || 'master';
 
 
 try {
@@ -55,6 +58,7 @@ try {
   exit(1);
 }
 
+validateBranch();
 
 
 // ### STEP 1 - Work out tags
@@ -250,6 +254,18 @@ function bumpUpVersion(bumpType) {
 
 }
 
+
+function validateBranch() {
+  var branches = exec(`git branch`).output;
+  var currentBranch = exec('git rev-parse --abbrev-ref HEAD').output.split('\n')[0];
+
+  if(program.branch !== currentBranch) {
+    error('You can not release from branch other than master. Use option --branch to specify branch name.');
+    exit(1);
+  } else {
+    info('>>> Your release branch is: ' + program.branch);
+  }
+}
 
 function terminateProcess(code) {
   if (code !== 0) {

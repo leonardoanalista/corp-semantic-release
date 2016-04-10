@@ -48,6 +48,7 @@ Of course you can change `corp-release` to any name you like.
 ## Options
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
 * '--pre-commit [pre-commit]': Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: `npm run [pre-commit]`. If you need more hooks to be implemented please open an issue.
+* -b [branch] or --branch [branch]: Branch name allowed to run release. Default is master. If you want to release from another branch, you need to specify.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 
 **NOTE**: if you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.:

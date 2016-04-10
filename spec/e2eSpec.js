@@ -171,7 +171,26 @@ describe('corp-semantic-release', function () {
 
   });
 
+  it('should run if branch is master', function () {
+    commitWithMessage('feat(accounts): commit 1');
+    shell.exec(`git checkout -b other-branch`);
+
+    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+
+    expect(out).to.include('You can not release from branch other than master. Use option --branch to specify branch name.');
+
+    shell.exec(`git checkout master`);
+    const outMaster = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+    expect(outMaster).to.include('>>> Your release branch is: master');
+  });
+
+
   // ####### Helpers ######
+
+  function getBranchName() {
+    var branch = shell.exec(`git branch`).output;
+    return branch;
+  }
 
   function commitFeat() {
     writeFileSync('feat.txt', '');
