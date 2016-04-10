@@ -64,7 +64,7 @@ describe('corp-semantic-release', function () {
   it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function () {
     commitFeat();
     shell.exec(`node ${__dirname}/../index.js -v`).output;
-    const expectedVersion = '1.1.0';
+    const expectedVersion = '1.0.0';
 
     // check Semantic Tag
     expectedGitTag(expectedVersion);
@@ -82,7 +82,6 @@ describe('corp-semantic-release', function () {
   it('should run pre-commit script if required', function () {
     commitFeat();
     const out = shell.exec(`node ${__dirname}/../index.js -v --pre-commit set-version`).output;
-    const expectedVersion = '1.1.0';
 
     expect(out).to.include(`this is my pre-commit script`);
   });
@@ -91,7 +90,8 @@ describe('corp-semantic-release', function () {
     // pre-conditions
     shell.cp(__dirname + '/../testData/CHANGELOG.md', tempDir);
     commitFeat();
-    shell.exec('git tag v1.0.0');
+    shell.exec(`node ${__dirname}/../index.js -v`).output;
+
     const expectedVersion = '2.0.0';
 
     // actions
@@ -123,7 +123,7 @@ describe('corp-semantic-release', function () {
   it('should NOT make any change when we run multiple times and there are no relevant commits', function () {
     commitWithMessage('initial commit');
     shell.exec(`node ${__dirname}/../index.js -v`).output;
-    const expectedVersion = '1.0.0';
+    const expectedVersion = '0.0.1';
 
     const gitStatus = shell.exec(`git status`).output;
     expect(gitStatus).to.include('nothing to commit, working directory clean');
@@ -147,7 +147,7 @@ describe('corp-semantic-release', function () {
     commitFixWithMessage('fix(exampleScope): add extra config');
 
     shell.exec(`node ${__dirname}/../index.js -v`).output;
-    const expectedVersion = '1.1.0';
+    const expectedVersion = '1.0.0';
 
     // version 1.1.0 expected
     var gitTag = shell.exec(`git tag | cat`).output;
@@ -171,7 +171,45 @@ describe('corp-semantic-release', function () {
 
   });
 
+  it('should run if branch is master', function () {
+    commitWithMessage('feat(accounts): commit 1');
+    shell.exec(`git checkout -b other-branch`);
+
+    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+
+    expect(out).to.include('You can not release from branch other than master. Use option --branch to specify branch name.');
+
+    shell.exec(`git checkout master`);
+    const outMaster = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+    expect(outMaster).to.include('>>> Your release branch is: master');
+  });
+
+
+  it('should inform user if package.json does not exist', function () {
+    commitWithMessage('feat(accounts): commit 1');
+    shell.exec(`rm package.json`);
+
+    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+
+    expect(out).to.include('Cant find your package.json');
+  });
+
+  it('should inform user if name is not present in package.json', function () {
+    commitWithMessage('feat(accounts): commit 1');
+    shell.exec(`rm package.json`);
+    shell.cp(__dirname + '/../testData/package_noname.json', tempDir + '/package.json');
+
+    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+
+    expect(out).to.include('Minimum required fields in your package.json are name and version');
+  });
+
   // ####### Helpers ######
+
+  function getBranchName() {
+    var branch = shell.exec(`git branch`).output;
+    return branch;
+  }
 
   function commitFeat() {
     writeFileSync('feat.txt', '');
