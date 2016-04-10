@@ -7,7 +7,7 @@ const CWD = process.cwd();
 const shelljs = require('shelljs/global');
 const chalk = require('chalk');
 const program = require('commander');
-const pkg = require('./package.json');
+
 
 const path = require('path');
 const fs = require('fs');
@@ -35,6 +35,20 @@ const error = function(msg, obj) {
 };
 
 
+try {
+  fs.statSync(process.cwd() + '/package.json');
+} catch (e) {
+  error('Cant find your package.json.');
+  exit(1);
+}
+const pkg = require(process.cwd() + '/package.json');
+
+
+if(!pkg.name || !pkg.version) {
+  error('Minimum required fields in your package.json are name and version.');
+  exit(1);
+}
+
 program
   .version(pkg.version)
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
@@ -51,13 +65,8 @@ if (program.dryrun) {
 program.branch = program.branch || 'master';
 
 
-try {
-  fs.statSync('package.json');
-} catch (e) {
-  error('Cant find your package.json.');
-  exit(1);
-}
 
+// ### STEP 0 - Validate branch
 validateBranch();
 
 
@@ -199,7 +208,7 @@ function getLatestTag() {
   let latestTag;
   if (!latestTagOutput.startsWith('v')) {
     latestTag = 'HEAD';
-    info('>> No SemVer tag found. It seems like your first release?');
+    info('>> No SemVer tag found. It seems like your first release? Initial release will be set to v1.0.0 as per npmjs specification.');
   } else {
     latestTag = latestTagOutput + '..HEAD';
 
@@ -239,13 +248,24 @@ function fromNodeModule(value) {
   return `${__dirname}/node_modules/${value}`;
 }
 
+function isFirstRelease(latestTag) {
+  return latestTag === 'HEAD';
+}
 
 function bumpUpVersion(bumpType) {
   // ###### INCREASE VERSION #####
+
   if (!program.dryrun) {
     console.log(chalk.bold.cyan('>>> update version on package.json...'));
     try {
-      var newVersion = exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
+      var newVersion;
+      if(isFirstRelease(latestTag)) {
+        newVersion = 'v1.0.0';
+        var w = exec('npm version --no-git-tag-version ' + newVersion).output.split('\n')[0];
+      } else {
+        newVersion = exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
+      }
+
       return newVersion;
     } catch (error) {
       terminateProcess(1);
