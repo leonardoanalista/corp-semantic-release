@@ -2,10 +2,9 @@
 
 Corporate semantic release for private projects under corporation network.
 
-It most of expected features of [semantic-release](https://github.com/semantic-release/semantic-release) but will not publish to **npmjs** at the end.
+It has almost all expected features from [semantic-release](https://github.com/semantic-release/semantic-release) but will not publish to **npmjs** at the end.
 
-Obviously this project is **100%** inspired by semantic release.
-
+Obviously this project is **100%** inspired by semantic release. This module is not supposed to replace its parent. First try to use semantic-release. If you have special requirements under corporate network, then this module is made for you. Ironically this module uses semantic-release as I don't have any stupid restrictions at my home network.
 
 
 
