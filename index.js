@@ -44,7 +44,7 @@ try {
 const pkg = require(process.cwd() + '/package.json');
 
 
-if(!pkg.name || !pkg.version) {
+if (!pkg.name || !pkg.version) {
   error('Minimum required fields in your package.json are name and version.');
   exit(1);
 }
@@ -228,18 +228,18 @@ function addFilesAndCreateTag(newVersion) {
   var code = exec('git add package.json CHANGELOG.md').code;
   terminateProcess(code);
 
+  // ###### Commit files #####
+  var code = exec('git commit -m "chore(release): ' + newVersion + '"').code;
+  terminateProcess(code);
 
   // ###### TAG NEW VERSION #####
   info(`>> Time to create the Semantic Tag: ${newVersion}`);
   var code = exec('git tag ' + newVersion).code;
   terminateProcess(code);
 
-  // ###### Commit files #####
-  var code = exec('git commit -m "chore(release): ' + newVersion + '"').code;
-  terminateProcess(code);
-
+  // ###### PUSH CHANGES #####
   info('>>...and push to remote...');
-  exec('git push --tags').output;
+  exec('git push && git push --tags').output;
 }
 
 
@@ -259,7 +259,7 @@ function bumpUpVersion(bumpType) {
     console.log(chalk.bold.cyan('>>> update version on package.json...'));
     try {
       var newVersion;
-      if(isFirstRelease(latestTag)) {
+      if (isFirstRelease(latestTag)) {
         newVersion = 'v1.0.0';
         var w = exec('npm version --no-git-tag-version ' + newVersion).output.split('\n')[0];
       } else {
@@ -279,7 +279,7 @@ function validateBranch() {
   var branches = exec(`git branch`).output;
   var currentBranch = exec('git rev-parse --abbrev-ref HEAD').output.split('\n')[0];
 
-  if(program.branch !== currentBranch) {
+  if (program.branch !== currentBranch) {
     error('You can not release from branch other than master. Use option --branch to specify branch name.');
     exit(1);
   } else {

@@ -1,8 +1,8 @@
 'use strict';
 
 /*
-  NOTE: This is teh End-2-end test.
-  - before every test: it created a git repo in a temp directory
+  NOTE: This is the End-2-end test.
+  - before every test: it creates a git repo in a temp directory
   - test cases set pre-conditions. Eg.: commit messages, add files
   - test cases run corp-semantic-release
   - test cases will verify the state of Git
@@ -86,6 +86,7 @@ describe('corp-semantic-release', function () {
     expect(out).to.include(`this is my pre-commit script`);
   });
 
+
   it('should bump Major version due to Breaking Change and append contents to CHANGELOG.md', function () {
     // pre-conditions
     shell.cp(__dirname + '/../testData/CHANGELOG.md', tempDir);
@@ -104,7 +105,6 @@ describe('corp-semantic-release', function () {
     expect(changelog).to.include(`# [2.0.0](//compare/v1.0.0...v${expectedVersion}) (${today})`);
 
     expectedVersionInPackageJson(expectedVersion);
-
   });
 
 
@@ -193,6 +193,7 @@ describe('corp-semantic-release', function () {
 
     expect(out).to.include('Cant find your package.json');
   });
+
 
   it('should inform user if name is not present in package.json', function () {
     commitWithMessage('feat(accounts): commit 1');
