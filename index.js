@@ -18,7 +18,10 @@ const _successFn = chalk.bold.green;
 const _infoFn = chalk.bold.cyan;
 const LOG = console.log;
 
-// var code; //exit code for shell commands. If it is !== 0 we abort the process.
+var standardChangelog = require('standard-changelog');
+var async = require('async');
+var stream = require('stream');
+
 
 // TODO: change to spread operator and default param value when node supports
 const info = function(msg, obj) {
@@ -65,9 +68,9 @@ if (program.dryrun) {
 program.branch = program.branch || 'master';
 
 
-
 // ### STEP 0 - Validate branch
 validateBranch();
+
 
 
 // ### STEP 1 - Work out tags
@@ -89,18 +92,35 @@ if (!isReleaseNecessary(bumpType, jsonCommits)) {
 const newVersion = bumpUpVersion(bumpType);
 
 
-// ### STEP 6 - ger changelog contents
-const changes = getChangelog();
+async.series([
 
-// ### STEP 7 - Write or Append (DESTRUCTIVE OPERATION)
-writeChangelog(changes); //it has to run after the version has been bumped.
+  // ### STEP 6 - ger changelog contents
+  function(callback) {
+    var contentStream = new stream.Writable();
+    contentStream._write = function (chunk, encoding, done) {
+      callback(null, chunk.toString());
+    };
+
+    // here we can the options in the future:
+    // (options, context, gitRawCommitsOpts, parserOpts, writerOpts);
+    standardChangelog().pipe(contentStream);
+  }
+],
+function(err, results) {
+
+  const changes = results[0];
+
+  // ### STEP 7 - Write or Append (DESTRUCTIVE OPERATION)
+  writeChangelog(changes); //it has to run after the version has been bumped.
 
 
-// ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
-runPreCommitScript(program.preCommit);
+  // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
+  runPreCommitScript(program.preCommit);
 
-// ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
-addFilesAndCreateTag(newVersion);
+  // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
+  addFilesAndCreateTag(newVersion);
+
+});
 
 
 // #################### Helpers ################### //
@@ -171,18 +191,12 @@ function isReleaseNecessary(bumpType, parsedCommits) {
 }
 
 
-function getChangelog() {
-  const data = exec(`node ${fromNodeModule('conventional-changelog/cli.js')} -p angular`, {silent: true}).output;
-
-  if (program.dryrun) {
-    info('>>> Future and additional contents of CHANGELOG.md: \n', data);
-  }
-
-  return data;
-}
 
 function writeChangelog(data) {
-  if (program.dryrun) return;
+  if (program.dryrun) {
+    info('>>> Changelog contents would have been: \n\n', data);
+    return;
+  }
 
   var writeFileSync = fs.writeFileSync;
 
@@ -203,16 +217,31 @@ function runPreCommitScript(script) {
 
 
 function getLatestTag() {
-  const latestTagOutput = exec(`node ${fromNodeModule('git-latest-semver-tag/cli.js')}`, {silent: false}).output.split('\n')[0];
 
-  let latestTag;
-  if (!latestTagOutput.startsWith('v')) {
-    latestTag = 'HEAD';
-    info('>> No SemVer tag found. It seems like your first release? Initial release will be set to v1.0.0 as per npmjs specification.');
-  } else {
-    latestTag = latestTagOutput + '..HEAD';
+  var semverValid = require('semver').valid;
+  var regex = /tag:\s*(.+?)[,\)]/gi;
+  var cmd = 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"';
+  var data = exec(cmd, {silent: true}).output;
+  var latestTag = null;
 
+  data.split('\n').some(function(decorations) {
+    var match;
+    while (match = regex.exec(decorations)) { // eslint-disable-line no-cond-assign
+      var tag = match[1];
+      if (semverValid(tag)) {
+        latestTag = tag;
+        return true;
+      }
+    }
+  });
+
+  if (latestTag) {
     if (program.verbose) info('>> Your latest semantic tag is: ', latestTag);
+
+    latestTag = `${latestTag}..HEAD`;
+  } else {
+    info('>> No SemVer tag found. It seems like your first release? Initial release will be set to v1.0.0 as per npmjs specification.');
+    latestTag = 'HEAD';
   }
 
   return latestTag;
@@ -221,7 +250,7 @@ function getLatestTag() {
 
 // It executes the release process pipeline
 function addFilesAndCreateTag(newVersion) {
-  if (program.dryrun) exit(0);
+  if (program.dryrun) return;
 
   // ###### Add edited files to git #####
   info('>>> About to add and commit package.json and CHANGELOG...');

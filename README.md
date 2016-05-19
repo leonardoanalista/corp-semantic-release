@@ -89,7 +89,6 @@ const jsonCommits = getJsonCommits(latestTag);
 
 ```
 
-
 ### I can't get over: I really have corporate proxies.
 
 I totally understand your frustrations and you are not the only one. Proxy settings is not the purpuse of this project but I am happy to provide some help if I can. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**. This is how I get things working. If you need further instructions on cntlm, send me a message.
