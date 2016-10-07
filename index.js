@@ -305,7 +305,7 @@ function bumpUpVersion(bumpType) {
 
 
 function validateBranch() {
-  var branches = exec(`git branch`).output;
+  var branches = exec('git branch').output;
   var currentBranch = exec('git rev-parse --abbrev-ref HEAD').output.split('\n')[0];
 
   if (program.branch !== currentBranch) {
@@ -321,4 +321,3 @@ function terminateProcess(code) {
     exit(code);
   }
 }
-

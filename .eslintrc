@@ -24,7 +24,7 @@
     "brace-style": 2,
     "eol-last": 1,
     "no-nested-ternary": 1,
-    "space-after-keywords": [1, "always"],
+    "keyword-spacing": [ 1, {"before": true, "after": true }],
     "space-before-blocks": [1, "always"],
     "semi": 2,
     "comma-dangle": [2, "never"],
