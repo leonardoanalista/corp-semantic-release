@@ -41,12 +41,21 @@
     "chai": "3.5.0",
     "cz-customizable": "3.1.0",
     "eslint": "1.9.0",
+    "ghooks": "^1.3.2",
     "istanbul": "0.4.2",
-    "jasmine-node": "1.14.5"
+    "jasmine-node": "1.14.5",
+    "validate-commit-msg": "^2.8.2"
   },
   "config": {
     "commitizen": {
       "path": "node_modules/cz-customizable"
+    },
+    "validate-commit-msg": {
+      "warnOnFail": false,
+      "helpMessage": "This repository uses angular's commit standards. See https://github.com/conventional-changelog/conventional-changelog-angular/blob/master/convention.md for more details."
+    },
+    "ghooks": {
+      "commit-msg": "validate-commit-msg"
     }
   },
   "bin": {
