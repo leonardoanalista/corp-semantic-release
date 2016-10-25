@@ -258,12 +258,12 @@ function addFilesAndCreateTag(newVersion) {
   terminateProcess(code);
 
   // ###### Commit files #####
-  var code = exec('git commit -m "chore(release): ' + newVersion + '"').code;
+  var code = exec(`git commit -m "chore(release): ${newVersion}"`).code;
   terminateProcess(code);
 
   // ###### TAG NEW VERSION #####
   info(`>> Time to create the Semantic Tag: ${newVersion}`);
-  var code = exec('git tag ' + newVersion).code;
+  var code = exec(`git tag ${newVersion}`).code;
   terminateProcess(code);
 
   // ###### PUSH CHANGES #####
@@ -290,9 +290,9 @@ function bumpUpVersion(bumpType) {
       var newVersion;
       if (isFirstRelease(latestTag)) {
         newVersion = 'v1.0.0';
-        var w = exec('npm version --no-git-tag-version ' + newVersion).output.split('\n')[0];
+        var w = exec(`npm version --no-git-tag-version ${newVersion}`).output.split('\n')[0];
       } else {
-        newVersion = exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
+        newVersion = exec(`npm version --no-git-tag-version ${bumpType}`).output.split('\n')[0];
       }
 
       return newVersion;
@@ -305,7 +305,7 @@ function bumpUpVersion(bumpType) {
 
 
 function validateBranch() {
-  var branches = exec(`git branch`).output;
+  var branches = exec('git branch').output;
   var currentBranch = exec('git rev-parse --abbrev-ref HEAD').output.split('\n')[0];
 
   if (program.branch !== currentBranch) {
@@ -321,4 +321,3 @@ function terminateProcess(code) {
     exit(code);
   }
 }
-

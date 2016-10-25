@@ -56,7 +56,7 @@ describe('corp-semantic-release', function () {
     expect(out).to.include('YOU ARE RUNNING IN DRY RUN MODE');
 
     // clean work directory
-    const gitStatus = shell.exec(`git status`).output;
+    const gitStatus = shell.exec('git status').output;
     expect(gitStatus).to.include('nothing to commit, working directory clean');
   });
 
@@ -83,7 +83,7 @@ describe('corp-semantic-release', function () {
     commitFeat();
     const out = shell.exec(`node ${__dirname}/../index.js -v --pre-commit set-version`).output;
 
-    expect(out).to.include(`this is my pre-commit script`);
+    expect(out).to.include('this is my pre-commit script');
   });
 
 
@@ -115,7 +115,7 @@ describe('corp-semantic-release', function () {
     expect(out).to.include('Release is not necessary at this point');
 
     // clean work directory
-    const gitStatus = shell.exec(`git status`).output;
+    const gitStatus = shell.exec('git status').output;
     expect(gitStatus).to.include('nothing to commit, working directory clean');
   });
 
@@ -125,11 +125,11 @@ describe('corp-semantic-release', function () {
     shell.exec(`node ${__dirname}/../index.js -v`).output;
     const expectedVersion = '0.0.1';
 
-    const gitStatus = shell.exec(`git status`).output;
+    const gitStatus = shell.exec('git status').output;
     expect(gitStatus).to.include('nothing to commit, working directory clean');
 
     // no changes expected, no tags expected
-    const gitTag = shell.exec(`git tag | cat`).output;
+    const gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal('');
     expectedVersionInPackageJson(expectedVersion);
 
@@ -150,13 +150,13 @@ describe('corp-semantic-release', function () {
     const expectedVersion = '1.0.0';
 
     // version 1.1.0 expected
-    var gitTag = shell.exec(`git tag | cat`).output;
+    var gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
 
     // then run again. The same version 1.1.0 expected
     var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
-    var gitTag = shell.exec(`git tag | cat`).output;
+    var gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
@@ -164,7 +164,7 @@ describe('corp-semantic-release', function () {
 
     // run once more. The same version 1.1.0 expected
     var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
-    var gitTag = shell.exec(`git tag | cat`).output;
+    var gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
@@ -173,13 +173,13 @@ describe('corp-semantic-release', function () {
 
   it('should run if branch is master', function () {
     commitWithMessage('feat(accounts): commit 1');
-    shell.exec(`git checkout -b other-branch`);
+    shell.exec('git checkout -b other-branch');
 
     const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
 
     expect(out).to.include('You can not release from branch other than master. Use option --branch to specify branch name.');
 
-    shell.exec(`git checkout master`);
+    shell.exec('git checkout master');
     const outMaster = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
     expect(outMaster).to.include('>>> Your release branch is: master');
   });
@@ -187,7 +187,7 @@ describe('corp-semantic-release', function () {
 
   it('should inform user if package.json does not exist', function () {
     commitWithMessage('feat(accounts): commit 1');
-    shell.exec(`rm package.json`);
+    shell.exec('rm package.json');
 
     const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
 
@@ -197,7 +197,7 @@ describe('corp-semantic-release', function () {
 
   it('should inform user if name is not present in package.json', function () {
     commitWithMessage('feat(accounts): commit 1');
-    shell.exec(`rm package.json`);
+    shell.exec('rm package.json');
     shell.cp(__dirname + '/../testData/package_noname.json', tempDir + '/package.json');
 
     const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
@@ -208,7 +208,7 @@ describe('corp-semantic-release', function () {
   // ####### Helpers ######
 
   function getBranchName() {
-    var branch = shell.exec(`git branch`).output;
+    var branch = shell.exec('git branch').output;
     return branch;
   }
 
@@ -235,7 +235,7 @@ describe('corp-semantic-release', function () {
 
   function commitFixWithBreakingChange() {
     writeFileSync('fix.txt', '');
-    const msg = `-m "fix: issue in the app" -m "BREAKING CHANGE:" -m "This should bump major"`;
+    const msg = '-m "fix: issue in the app" -m "BREAKING CHANGE:" -m "This should bump major"';
 
     commitWithMessageMultiline(msg);
   }
@@ -254,7 +254,7 @@ describe('corp-semantic-release', function () {
   function expectedGitTag(expectedVersion) {
     // check for new commit
     let gitLog = shell.exec('git log | cat').output;
-    expect(gitLog).to.include(`chore(release): ` + `v` + `${expectedVersion}`);
+    expect(gitLog).to.include(`chore(release): v${expectedVersion}`);
 
     let gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.include('v' + expectedVersion);
