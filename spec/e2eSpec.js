@@ -149,20 +149,19 @@ describe('corp-semantic-release', function () {
     shell.exec(`node ${__dirname}/../index.js -v`).output;
     const expectedVersion = '1.0.0';
 
-    // version 1.1.0 expected
+    // version 1.0.0 expected
     var gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
 
-    // then run again. The same version 1.1.0 expected
+    // then run again. The same version 1.0.0 expected
     var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
     var gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
 
-
-    // run once more. The same version 1.1.0 expected
+    // run once more. The same version 1.0.0 expected
     var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
     var gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
