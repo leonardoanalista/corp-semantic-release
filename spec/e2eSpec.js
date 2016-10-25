@@ -11,9 +11,7 @@
 
 var expect = require('chai').expect;
 var shell = require('shelljs');
-var spawn = require('child_process').spawn;
 var fs = require('fs');
-var readFileSync = fs.readFileSync;
 var writeFileSync = fs.writeFileSync;
 var temp = require('temp').track();
 
@@ -143,6 +141,8 @@ describe('corp-semantic-release', function () {
 
 
   it('should NOT make any change when we run multiple times and after a first minor release', function () {
+    var out;
+    var gitTag;
     commitWithMessage('feat(accounts): commit 1');
     commitFixWithMessage('fix(exampleScope): add extra config');
 
@@ -150,20 +150,20 @@ describe('corp-semantic-release', function () {
     const expectedVersion = '1.0.0';
 
     // version 1.0.0 expected
-    var gitTag = shell.exec('git tag | cat').output;
+    gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
 
     // then run again. The same version 1.0.0 expected
-    var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
-    var gitTag = shell.exec('git tag | cat').output;
+    out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
 
     // run once more. The same version 1.0.0 expected
-    var out = shell.exec(`node ${__dirname}/../index.js -v`).output;
-    var gitTag = shell.exec('git tag | cat').output;
+    out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
@@ -206,10 +206,10 @@ describe('corp-semantic-release', function () {
 
   // ####### Helpers ######
 
-  function getBranchName() {
-    var branch = shell.exec('git branch').output;
-    return branch;
-  }
+  // function getBranchName() {
+  //   var branch = shell.exec('git branch').output;
+  //   return branch;
+  // }
 
   function commitFeat() {
     writeFileSync('feat.txt', '');
