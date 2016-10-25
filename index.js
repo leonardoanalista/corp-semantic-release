@@ -37,7 +37,7 @@ if (program.dryrun) {
 }
 
 program.branch = program.branch || 'master';
-var newVersion = '';
+var version;
 
 // ### STEP 0 - Validate branch
 lib.validateBranch(program.branch);
@@ -51,8 +51,9 @@ const bumpType = lib.whatBump(jsonCommits);
 if (!lib.isReleaseNecessary(bumpType, latestTag, jsonCommits, program.verbose)) {
   shell.exit(0);
 }
+
 // ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
-if (!program.dryrun) newVersion = lib.bumpUpVersion(bumpType, latestTag);
+if (!program.dryrun) version = lib.bumpUpVersion(bumpType, latestTag);
 
 async.series([
   // ### STEP 6 - get changelog contents
@@ -80,5 +81,5 @@ function(err, results) {
   // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
   lib.runPreCommitScript(program.preCommit);
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
-  if (!program.dryrun) lib.addFilesAndCreateTag(newVersion);
+  if (!program.dryrun) lib.addFilesAndCreateTag(version);
 });
