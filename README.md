@@ -4,7 +4,7 @@ Corporate semantic release for private projects under corporation network.
 
 It has almost all expected features from [semantic-release](https://github.com/semantic-release/semantic-release) but will not publish to **npmjs** at the end.
 
-Obviously this project is **100%** inspired by semantic release. This module is not supposed to replace its parent. First try to use semantic-release. If you have special requirements under corporate network, then this module is made for you. Ironically this module uses semantic-release as I don't have any stupid restrictions at my home network.
+Obviously this project is **100%** inspired by semantic release. This module is **not** supposed to replace its parent. First try to use semantic-release. If you have special requirements under corporate network, then this module is made for you. Ironically this module uses semantic-release as I don't have any stupid network restrictions at my home.
 
 
 
@@ -17,7 +17,7 @@ Obviously this project is **100%** inspired by semantic release. This module is 
 * Detect if a release is required. If not, exit(0);
 * Figure out type of bump as usual: Major, minor or patch
 * Read your commits from last semantic tag and generate or append contents to `CHANGELOG.md` file.
-* bump your `package.json` only
+* bump your `package.json`
 * run `git add package.json CHANGELOG.md`
 * run any `pre-commit` script, if specified
 * run `git commit -m "chore(build): release v1.0.0"`
@@ -61,9 +61,8 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 
 
 ## TODO - Roadmap:
-* split cli tool and write unit tests for functions.
 * add option to create release on Enterprise GitHub using API v3. I am sure one day the corps will be using version 3.
-* make code fully functional with Immutable.js and Ramda.
+* Write functional code.
 
 
 ## FAQ
@@ -80,15 +79,11 @@ Take a look at the file `test/e2eSpec.js`. It has comprehensive e2e tests in ord
 ### how is the pipeline of actions different to `semantic-release`?
 `corp-semantic-release` will not publish to `npmjs.com`. Take a look at the file `index.js`. It contains a pipiline of actions like this:
 
-```
-// ### STEP [1] - Work out tags
-...
+### What else is different to `semantic-release`?
+`corp-semantic-release`, at the moment, generetes and appends changelog contents to a file called CHANGELOG.md.
 
-// ### STEP [n] - Get Commits
-const jsonCommits = getJsonCommits(latestTag);
-
-```
-
-### I can't get over: I really have corporate proxies.
+### I can't get over: I really hate corporate proxies.
 
 I totally understand your frustrations and you are not the only one. Proxy settings is not the purpuse of this project but I am happy to provide some help if I can. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**. This is how I get things working. If you need further instructions on cntlm, send me a message.
+
+
