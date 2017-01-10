@@ -99,8 +99,33 @@ describe('corp-semantic-release', function () {
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').output;
+
     expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
-    expect(changelog).to.include(`# [2.0.0](//compare/v1.0.0...v${expectedVersion}) (${today})`);
+    expect(changelog).to.include(`# [2.0.0](https://any.git.host/owner-name/repo-name/compare/v1.0.0...v${expectedVersion}) (${today})`);
+    expect(changelog).to.match(/\* issue in the app \(\[[a-z0-9]{7}\]\(.*\)/);
+
+    expectedVersionInPackageJson(expectedVersion);
+  });
+
+
+  it('should generate a changelog for BitBucket without link references', function () {
+    // pre-conditions
+    shell.cp(__dirname + '/../testData/CHANGELOG.md', tempDir);
+    commitFeat();
+    shell.exec(`node ${__dirname}/../index.js -v --changelogpreset angular-bitbucket`).output;
+
+    const expectedVersion = '2.0.0';
+
+    // actions
+    commitFixWithBreakingChange();
+    shell.exec(`node ${__dirname}/../index.js -v --changelogpreset angular-bitbucket`).output;
+
+    // verify
+    let changelog = shell.exec('cat CHANGELOG.md').output;
+
+    expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
+    expect(changelog).to.include(`# [2.0.0](https://any.git.host/projects/owner-name/repos/repo-name/compare/diff?targetBranch=refs%2Ftags%2Fv1.0.0&sourceBranch=refs%2Ftags%2Fv${expectedVersion}) (${today})`);
+    expect(changelog).to.match(/\* issue in the app \([a-z0-9]{7}\)/);    // No link on the commit
 
     expectedVersionInPackageJson(expectedVersion);
   });
