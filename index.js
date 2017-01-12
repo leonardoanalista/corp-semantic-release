@@ -6,7 +6,7 @@ const log = require('./lib').log;
 const shell = require('shelljs');
 const program = require('commander');
 const fs = require('fs');
-var standardChangelog = require('standard-changelog');
+var changelog = require('conventional-changelog');
 var async = require('async');
 var stream = require('stream');
 
@@ -30,6 +30,7 @@ program
   .option('--pre-commit [pre-commit]', 'Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: npm run [pre-commit]')
   .option('-b --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
   .option('-v, --verbose', 'Prints debug info')
+  .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')
   .parse(process.argv);
 
 if (program.dryrun) {
@@ -37,6 +38,8 @@ if (program.dryrun) {
 }
 
 program.branch = program.branch || 'master';
+program.changelogpreset = program.changelogpreset || 'angular';
+
 var version;
 
 // ### STEP 0 - Validate branch
@@ -63,9 +66,12 @@ async.series([
       callback(null, chunk.toString());
     };
 
-    // here we can the options in the future:
+    // here we can add the options in the future:
     // (options, context, gitRawCommitsOpts, parserOpts, writerOpts);
-    standardChangelog().pipe(contentStream);
+    var options = {
+      preset: program.changelogpreset
+    };
+    changelog(options).pipe(contentStream);
   }
 ],
 function(err, results) {

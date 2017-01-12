@@ -4,5 +4,9 @@
   "author": "leonardoanalista",
   "scripts": {
     "set-version": "echo 'this is my pre-commit script'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://any.git.host/owner-name/repo-name.git"
   }
 }
