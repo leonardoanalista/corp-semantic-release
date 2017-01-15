@@ -1,3 +1,5 @@
+'use strict';
+
 const log = require('../src/lib/log');
 const expect = require('chai').expect;
 const chalk = require('chalk');

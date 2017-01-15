@@ -1,3 +1,4 @@
+'use strict';
 const expect = require('chai').expect;
 const rewire = require('rewire');
 const stdout = require('test-console').stdout;
