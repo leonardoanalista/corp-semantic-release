@@ -1,6 +1,7 @@
 const log = require('../src/lib/log');
 const expect = require('chai').expect;
 const chalk = require('chalk');
+const stdout = require('test-console').stdout;
 
 describe('log', () => {
 
@@ -10,7 +11,6 @@ describe('log', () => {
     {desc: 'announce', fn: log.announce, colour: 'white', colourFn: chalk.bold.bgGreen.white},
     {desc: 'error', fn: log.error, colour: 'red', colourFn: chalk.bold.red},
   ];
-  const stdout = require('test-console').stdout;
 
   testData.forEach(test => {
 

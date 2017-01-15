@@ -88,6 +88,7 @@
     "mocha": "3.2.0",
     "npm-run-all": "3.1.0",
     "nyc": "10.0.0",
+    "rewire": "2.5.2",
     "rimraf": "2.5.4",
     "test-console": "1.0.0"
   },

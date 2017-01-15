@@ -202,7 +202,7 @@ describe('corp-semantic-release', function () {
 
     const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
 
-    expect(out).to.include('You can not release from branch other than master. Use option --branch to specify branch name.');
+    expect(out).to.include('You can only release from the master branch. Use option --branch to specify branch name.');
 
     shell.exec('git checkout master');
     const outMaster = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
