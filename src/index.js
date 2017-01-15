@@ -30,7 +30,8 @@ program
   .option('--pre-commit [pre-commit]', 'Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: npm run [pre-commit]')
   .option('-b --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
   .option('-v, --verbose', 'Prints debug info')
-  .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')
+  .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket' +
+    ' is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')
   .parse(process.argv);
 
 if (program.dryrun) {

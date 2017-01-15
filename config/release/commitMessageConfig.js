@@ -15,12 +15,18 @@ module.exports = {
     {value: 'WIP',      name: 'WIP:      Work in progress'}
   ],
 
+  // it needs to match the value for field type. Eg.: 'fix'
   scopes: [
+    {name: 'build'},
+    {name: 'changelog'},
+    {name: 'contributing'},
+    {name: 'process'},
+    {name: 'readme'},
   ],
 
-  scopeOverrides: {
-  },
+  allowCustomScopes: false,
+  allowBreakingChanges: ['feat', 'fix'],
 
-  allowCustomScopes: true
-
+  // Appends the branch name to the footer of the commit. Useful for tracking commits after branches have been merged
+  appendBranchNameToCommitMessage: false
 };

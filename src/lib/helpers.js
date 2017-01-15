@@ -3,11 +3,6 @@ const shell = require('shelljs');
 
 module.exports = {
 
-  // Unused?
-  fromNodeModule(value) {
-    return `${__dirname}/node_modules/${value}`;
-  },
-
   isFirstRelease(latestTag) {
     return latestTag === 'HEAD';
   },
