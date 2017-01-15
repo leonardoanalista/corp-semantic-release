@@ -17,6 +17,7 @@ module.exports = {
 
   // it needs to match the value for field type. Eg.: 'fix'
   scopes: [
+    {name: 'app'},
     {name: 'build'},
     {name: 'changelog'},
     {name: 'contributing'},

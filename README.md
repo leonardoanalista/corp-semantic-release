@@ -88,6 +88,7 @@ Take a look at the file `test/e2e.spec.js`. It has comprehensive system tests in
 Yes. Importantly, `corp-semantic-release` will *not* attempt to publish to an NPM registry.
 
 Actions performed:
+
 1. Validate that the current branch is the release branch.
 1. Determine the current version number (from the latest git tag).
 1. Get the commit history since the latest git tag.
