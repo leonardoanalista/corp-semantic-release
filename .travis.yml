@@ -3,8 +3,10 @@ language: node_js
 cache:
   directories:
     - node_modules
+
 notifications:
   email: false
+
 node_js:
   - '4'
   - '6'
@@ -15,11 +17,12 @@ before_script:
   - npm prune
 
 script:
-  - npm run lint
-  - npm run test:debug
+  - npm run pre-release
 
 after_success:
+  - npm run upload-coverage
   - npm run semantic-release
+
 branches:
   except:
-    - "/^v\\d+\\.\\d+\\.\\d+$/"
+    - /^v\d+\.\d+\.\d+$/

@@ -12,8 +12,8 @@ const _info = chalk.bold.cyan;
 
 // TODO: change to spread operator
 module.exports = {
-  info: (msg, obj) => LOG(_info(msg), obj),
-  success: (msg, obj) => LOG(_success(msg), obj),
-  announce: (msg, obj) => INFO(_announce(msg), obj),
-  error: (msg, obj) => LOG(_error(msg), obj)
+  info: (msg, obj) => LOG(_info(msg), obj || ''),
+  success: (msg, obj) => LOG(_success(msg), obj || ''),
+  announce: (msg, obj) => INFO(_announce(msg), obj || ''),
+  error: (msg, obj) => LOG(_error(msg), obj || '')
 };

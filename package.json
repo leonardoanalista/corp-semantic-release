@@ -1,37 +1,74 @@
 {
   "name": "corp-semantic-release",
-  "description": "Corporate semantic release for private projects under corporation network.",
-  "main": "index.js",
-  "engines": {
-    "node": ">= 4.0.0",
-    "npm": ">= 2.0.0"
+  "description": "Semantic-release package for repositories inside private networks (e.g. corporations) or for non-GitHub repositories.",
+  "keywords": [
+    "author",
+    "automation",
+    "changelog",
+    "module",
+    "package",
+    "publish",
+    "release",
+    "semver",
+    "version"
+  ],
+  "homepage": "https://github.com/leonardoanalista/corp-semantic-release#readme",
+  "bugs": {
+    "url": "https://github.com/leonardoanalista/corp-semantic-release/issues"
   },
-  "scripts": {
-    "lint": "node_modules/eslint/bin/eslint.js *.js spec/**.js",
-    "test": "node_modules/jasmine-node/bin/jasmine-node spec/",
-    "test:debug": "npm run test --debug=true",
-    "test:coverage": "istanbul cover -x cz-config-EXAMPLE.js node_modules/jasmine-node/bin/jasmine-node spec/",
-    "test:check-coverage": "istanbul check-coverage --statements 100 --branches 100 --functions 100 --lines 100",
-    "test:watch": "node_modules/jasmine-node/bin/jasmine-node --color --autotest spec/ --watch .",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post"
+  "license": "MIT",
+  "author": "leonardoanalista",
+  "files": [
+    "src",
+    "*.md"
+  ],
+  "main": "src/index.js",
+  "bin": {
+    "corp-semantic-release": "src/index.js"
   },
   "repository": {
     "type": "git",
     "url": "https://github.com/leonardoanalista/corp-semantic-release.git"
   },
-  "keywords": [],
-  "author": "leonardoanalista",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/leonardoanalista/corp-semantic-release/issues"
+  "scripts": {
+    "_README": "echo Due to the fact the tests are executing in shell processes, we need to use NYC to get coverage infrormation.",
+    "pre-release": "npm-run-all verify test:coverage build ",
+    "build": "cross-env NODE_ENV=production npm run clean:prod",
+    "clean:prod": "rimraf dist/",
+    "dev": "cross-env NODE_ENV=development npm run verify:watch",
+    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "start": "npm run dev",
+    "test": "npm run test:unit",
+    "test:check-coverage": "nyc check-coverage reports/coverage/coverage.json",
+    "test:coverage": "npm-run-all test:unit:cover test:check-coverage --silent",
+    "test:unit": "chokidar 'src/**/*.js' 'spec/**/*.js' -c 'npm run test:unit:once' --initial --silent",
+    "test:unit:cover": "rimraf .nyc_output && nyc mocha --opts config/testUnit/mocha.opts",
+    "test:unit:once": "mocha --opts config/testUnit/mocha.opts",
+    "upload-coverage": "nyc report --reporter=text-lcov | coveralls",
+    "verify": "npm run verify:js --silent",
+    "verify:js": "eslint -c config/verify/.eslintrc \"src/**/*.js\" \"spec/**/*.js\" \"config/**/*.js\" && echo ✅ verify:js success",
+    "verify:js:fix": "eslint --fix -c config/verify/.eslintrc \"src/**/*.js\" \"spec/**/*.js\" \"config/**/*.js\" && echo ✅ verify:js:fix success",
+    "verify:js:watch": "chokidar 'src/**/*.js' 'spec/**/*.js' 'config/**/*.js' -c 'npm run verify:js:fix' --initial --silent",
+    "verify:watch": "npm run verify:js:watch --silent"
   },
-  "homepage": "https://github.com/leonardoanalista/corp-semantic-release#readme",
+  "config": {
+    "commitizen": {
+      "path": "node_modules/cz-customizable"
+    },
+    "cz-customizable": {
+      "config": "config/release/commitMessageConfig.js"
+    },
+    "ghooks": {
+      "pre-push": "npm-run-all verify test:coverage --silent",
+      "commit-msg": "node ./node_modules/cz-customizable-ghooks/lib/index.js $2"
+    }
+  },
   "dependencies": {
     "async": "^2.0.0-rc.5",
     "chalk": "1.1.1",
     "commander": "2.9.0",
     "conventional-changelog": "1.1.0",
-    "conventional-changelog-angular-bitbucket": "1.0.0",
+    "conventional-changelog-angular-bitbucket": "1.0.1",
     "prepend-file": "1.3.0",
     "semantic-release": "4.3.5",
     "semver": "5.1.0",
@@ -40,18 +77,23 @@
   },
   "devDependencies": {
     "chai": "3.5.0",
-    "cz-customizable": "3.1.0",
-    "eslint": "^3.7.1",
-    "eslint-plugin-jasmine": "^1.8.1",
-    "istanbul": "0.4.2",
-    "jasmine-node": "1.14.5"
+    "chokidar-cli": "1.2.0",
+    "coveralls": "2.11.15",
+    "cross-env": "3.1.3",
+    "cz-customizable": "4.0.0",
+    "cz-customizable-ghooks": "1.4.0",
+    "eslint": "3.12.2",
+    "eslint-plugin-node": "2.0.0",
+    "ghooks": "1.3.2",
+    "mocha": "3.2.0",
+    "npm-run-all": "3.1.0",
+    "nyc": "10.0.0",
+    "rewire": "2.5.2",
+    "rimraf": "2.5.4",
+    "test-console": "1.0.0"
   },
-  "config": {
-    "commitizen": {
-      "path": "node_modules/cz-customizable"
-    }
-  },
-  "bin": {
-    "corp-semantic-release": "index.js"
+  "engines": {
+    "node": ">= 4.0.0",
+    "npm": ">= 2.0.0"
   }
 }

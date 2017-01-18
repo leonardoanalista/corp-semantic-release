@@ -28,7 +28,7 @@ describe('corp-semantic-release', function () {
     shell.config.silent = !process.env.npm_config_debug;
     shell.rm('-rf', tempDir);
     shell.mkdir(tempDir);
-    shell.cp(__dirname + '/../testData/package.json', tempDir);
+    shell.cp(__dirname + '/testData/package.json', tempDir);
 
     shell.cd(tempDir);
 
@@ -49,7 +49,7 @@ describe('corp-semantic-release', function () {
 
   it('should not change anything in dry mode', function () {
     commitFeat();
-    const out = shell.exec(`node ${__dirname}/../index.js -d`).output;
+    const out = shell.exec(`node ${__dirname}/../src/index.js -d`).output;
 
     expect(out).to.include('YOU ARE RUNNING IN DRY RUN MODE');
 
@@ -61,7 +61,7 @@ describe('corp-semantic-release', function () {
 
   it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function () {
     commitFeat();
-    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
     const expectedVersion = '1.0.0';
 
     // check Semantic Tag
@@ -79,7 +79,7 @@ describe('corp-semantic-release', function () {
 
   it('should run pre-commit script if required', function () {
     commitFeat();
-    const out = shell.exec(`node ${__dirname}/../index.js -v --pre-commit set-version`).output;
+    const out = shell.exec(`node ${__dirname}/../src/index.js -v --pre-commit set-version`).output;
 
     expect(out).to.include('this is my pre-commit script');
   });
@@ -87,15 +87,15 @@ describe('corp-semantic-release', function () {
 
   it('should bump Major version due to Breaking Change and append contents to CHANGELOG.md', function () {
     // pre-conditions
-    shell.cp(__dirname + '/../testData/CHANGELOG.md', tempDir);
+    shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
-    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
 
     const expectedVersion = '2.0.0';
 
     // actions
     commitFixWithBreakingChange();
-    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').output;
@@ -108,24 +108,25 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should generate a changelog for BitBucket without link references', function () {
+  it('should generate a changelog for BitBucket with link references', function () {
     // pre-conditions
-    shell.cp(__dirname + '/../testData/CHANGELOG.md', tempDir);
+    shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
-    shell.exec(`node ${__dirname}/../index.js -v --changelogpreset angular-bitbucket`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v --changelogpreset angular-bitbucket`).output;
 
     const expectedVersion = '2.0.0';
 
     // actions
     commitFixWithBreakingChange();
-    shell.exec(`node ${__dirname}/../index.js -v --changelogpreset angular-bitbucket`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v --changelogpreset angular-bitbucket`).output;
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').output;
 
     expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
-    expect(changelog).to.include(`# [2.0.0](https://any.git.host/projects/owner-name/repos/repo-name/compare/diff?targetBranch=refs%2Ftags%2Fv1.0.0&sourceBranch=refs%2Ftags%2Fv${expectedVersion}) (${today})`);
-    expect(changelog).to.match(/\* issue in the app \([a-z0-9]{7}\)/);    // No link on the commit
+    expect(changelog).to.include(`# [2.0.0](https://any.git.host/projects/owner-name/repos/repo-name/compare/diff?` +
+      `targetBranch=refs%2Ftags%2Fv1.0.0&sourceBranch=refs%2Ftags%2Fv${expectedVersion}) (${today})`);
+    expect(changelog).to.match(/\* issue in the app \(\[[a-z0-9]{7}\]\(.*\)/);
 
     expectedVersionInPackageJson(expectedVersion);
   });
@@ -133,7 +134,7 @@ describe('corp-semantic-release', function () {
 
   it('should detect release is not necessary', function () {
     commitNonReleaseTypes();
-    const out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    const out = shell.exec(`node ${__dirname}/../src/index.js -v`).output;
 
     expect(out).to.include('Release is not necessary at this point');
 
@@ -145,7 +146,7 @@ describe('corp-semantic-release', function () {
 
   it('should NOT make any change when we run multiple times and there are no relevant commits', function () {
     commitWithMessage('initial commit');
-    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
     const expectedVersion = '0.0.1';
 
     const gitStatus = shell.exec('git status').output;
@@ -158,7 +159,7 @@ describe('corp-semantic-release', function () {
 
 
     // Then when I ran again
-    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
     expectedVersionInPackageJson(expectedVersion);
     expect(gitTag).to.equal('');
     expectedVersionInPackageJson(expectedVersion);
@@ -171,7 +172,7 @@ describe('corp-semantic-release', function () {
     commitWithMessage('feat(accounts): commit 1');
     commitFixWithMessage('fix(exampleScope): add extra config');
 
-    shell.exec(`node ${__dirname}/../index.js -v`).output;
+    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
     const expectedVersion = '1.0.0';
 
     // version 1.0.0 expected
@@ -180,14 +181,14 @@ describe('corp-semantic-release', function () {
     expectedVersionInPackageJson(expectedVersion);
 
     // then run again. The same version 1.0.0 expected
-    out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    out = shell.exec(`node ${__dirname}/../src/index.js -v`).output;
     gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
 
     // run once more. The same version 1.0.0 expected
-    out = shell.exec(`node ${__dirname}/../index.js -v`).output;
+    out = shell.exec(`node ${__dirname}/../src/index.js -v`).output;
     gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
@@ -199,12 +200,12 @@ describe('corp-semantic-release', function () {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('git checkout -b other-branch');
 
-    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+    const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
 
-    expect(out).to.include('You can not release from branch other than master. Use option --branch to specify branch name.');
+    expect(out).to.include('You can only release from the master branch. Use option --branch to specify branch name.');
 
     shell.exec('git checkout master');
-    const outMaster = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+    const outMaster = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
     expect(outMaster).to.include('>>> Your release branch is: master');
   });
 
@@ -213,7 +214,7 @@ describe('corp-semantic-release', function () {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('rm package.json');
 
-    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+    const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
 
     expect(out).to.include('Cant find your package.json');
   });
@@ -222,9 +223,9 @@ describe('corp-semantic-release', function () {
   it('should inform user if name is not present in package.json', function () {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('rm package.json');
-    shell.cp(__dirname + '/../testData/package_noname.json', tempDir + '/package.json');
+    shell.cp(__dirname + '/testData/package_noname.json', tempDir + '/package.json');
 
-    const out = shell.exec(`node ${__dirname}/../index.js -v -d`).output;
+    const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
 
     expect(out).to.include('Minimum required fields in your package.json are name and version');
   });

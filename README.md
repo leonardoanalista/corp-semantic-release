@@ -1,16 +1,24 @@
-# corp-semantic-release.
+<!--[RM_HEADING]-->
+# corp-semantic-release
 
-Corporate semantic release for private projects under corporation network.
+<!--[]-->
 
-It has almost all expected features from [semantic-release](https://github.com/semantic-release/semantic-release) but will not publish to **npmjs** at the end.
+> [Semantic-release](https://github.com/semantic-release/semantic-release) for repositories that are inside private networks (e.g. corporations)
+  or for non-GitHub repositories.
+
+It has almost all expected features from [semantic-release](https://github.com/semantic-release/semantic-release) but will **not** publish to an NPM registry at the end.
 
 Obviously this project is **100%** inspired by semantic release. This module is **not** supposed to replace its parent. First try to use semantic-release. If you have special requirements under corporate network, then this module is made for you. Ironically this module uses semantic-release as I don't have any stupid network restrictions at my home.
 
 
-
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)[![Build Status](https://travis-ci.org/leonardoanalista/corp-semantic-release.svg)](https://travis-ci.org/leonardoanalista/corp-semantic-release)[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)[![npm monthly downloads](https://img.shields.io/npm/dm/corp-semantic-release.svg?style=flat-square)](https://www.npmjs.com/package/corp-semantic-release)
-
-
+[![NPM Version](https://img.shields.io/npm/v/corp-semantic-release.svg?style=flat-square)](http://npm.im/corp-semantic-release)
+[![Build Status](https://travis-ci.org/leonardoanalista/corp-semantic-release.svg)](https://travis-ci.org/leonardoanalista/corp-semantic-release)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
+[![Coverage Status](https://coveralls.io/repos/github/leonardoanalista/corp-semantic-release/badge.svg?branch=master)](https://coveralls.io/github/leonardoanalista/corp-semantic-release?branch=master)
+[![Dependencies status](https://david-dm.org/leonardoanalista/corp-semantic-release/status.svg?theme=shields.io)](https://david-dm.org/leonardoanalista/corp-semantic-release#info=dependencies)
+[![Dev-dependencies status](https://david-dm.org/leonardoanalista/corp-semantic-release/dev-status.svg?theme=shields.io)](https://david-dm.org/leonardoanalista/corp-semantic-release#info=devDependencies)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![npm monthly downloads](https://img.shields.io/npm/dm/corp-semantic-release.svg?style=flat-square)](https://www.npmjs.com/package/corp-semantic-release)
 
 ## Actions performed
 
@@ -27,7 +35,9 @@ Obviously this project is **100%** inspired by semantic release. This module is 
 
 
 ## Install
-run: `npm install corp-semantic-release --save-dev`
+
+    npm install corp-semantic-release --save-dev
+
 
 ## Configure
 
@@ -46,14 +56,12 @@ Of course you can change `corp-release` to any name you like.
 
 ## Options
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
-* '--pre-commit [pre-commit]': Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: `npm run [pre-commit]`. If you need more hooks to be implemented please open an issue.
-* -b [branch] or --branch [branch]: Branch name allowed to run release. Default is master. If you want to release from another branch, you need to specify.
+* `--pre-commit [pre-commit]`: Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: `npm run [pre-commit]`. If you need more hooks to be implemented please open an issue.
+* `-b [branch]` or `--branch [branch]`: Branch name allowed to run release. Default is `master`. If you want to release from another branch, you need to specify.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
-* `--changelogpreset [preset]`: The conventional-changelog preset to use. Default is `angular`. `angular-bitbucket` is available for [BitBucket repositories](https://github.com/uglow/conventional-changelog-angular-bitbucket). Other presets can be installed: `npm i conventional-changelog-jquery` then pass this flag to the command: `--changelogpreset jquery`.
+* `--changelogpreset [preset]`: The conventional-changelog preset to use. Default is `angular`. `angular-bitbucket` is available for [BitBucket repositories](https://github.com/uglow/conventional-changelog-angular-bitbucket). Other presets can be installed, e.g: `npm i conventional-changelog-jquery` then pass this flag to the command: `--changelogpreset jquery`.
 
-**NOTE**: if you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.:
-
-`npm run corp-release -- -v -d`
+**NOTE**: If you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.: `npm run corp-release -- -v -d`
 
 
 ## Contribute
@@ -65,26 +73,47 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 * add option to create release on Enterprise GitHub using API v3. I am sure one day the corps will be using version 3.
 * Write functional code.
 
-
 ## FAQ
 
-### I work in a corporation and proxy there is a pain in the azz?
-This npm module is for you. I was unable to pass the setup stage of `semantic-release` inside a corporation network. That was one of the reasons why I created this package.
+### I work in a corporation which has a network proxy which is a pain in the azz. What should I do?
+This NPM module is for you! I was unable to pass the setup stage of `semantic-release` inside a corporation network. That was one of the reasons why I created this package.
 
-### how can I setup `corp-semantic-release`?
-run `npm install corp-semantic-release`. There is no wizard like semantic-release.
+### How do I setup `corp-semantic-release`?
+Run `npm install corp-semantic-release`. There is no setup wizard like the `semantic-release` package has. Simple!
 
 ### Can I trust 'corp-semantic-release'?
-Take a look at the file `test/e2eSpec.js`. It has comprehensive e2e tests in order to make sure it works as expected.
+Take a look at the file `test/e2e.spec.js`. It has comprehensive system tests in order to make sure it works as expected.
 
-### how is the pipeline of actions different to `semantic-release`?
-`corp-semantic-release` will not publish to `npmjs.com`. Take a look at the file `index.js`. It contains a pipiline of actions like this:
+### Are the pipeline-of-actions different to `semantic-release`?
+Yes. Importantly, `corp-semantic-release` will *not* attempt to publish to an NPM registry.
+
+Actions performed:
+
+1. Validate that the current branch is the release branch.
+1. Determine the current version number (from the latest git tag).
+1. Get the commit history since the latest git tag.
+1. Determine the new semantic version number from the commit history.
+1. Decide whether a release is required or not. If not, exit.
+1. Update `package.json` with the new version number.
+1. Update or create `CHANGELOG.md` with the relevant log entries (from the commit history).
+1. Run pre-commit scripts.
+1. Commit file changes to git, create git tag then push all changes (including tags).
+
 
 ### What else is different to `semantic-release`?
 `corp-semantic-release`, at the moment, generetes and appends changelog contents to a file called CHANGELOG.md.
 
-### I can't get over: I really hate corporate proxies.
+### I just can't get over it - I really hate corporate proxies!
 
-I totally understand your frustrations and you are not the only one. Proxy settings is not the purpuse of this project but I am happy to provide some help if I can. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**. This is how I get things working. If you need further instructions on cntlm, send me a message.
+I totally understand your frustrations and you are not the only one. Proxy settings is not the focus of this project
+but I am happy to provide some help if I can. I use `cntlm` as reverse proxy. I also **turn off ssl on npm**.
+This is how I get things working. If you need further instructions on cntlm, send me a message.
 
+
+<!--[RM_LICENSE]-->
+## License
+
+This software is licensed under the MIT Licence. See [LICENSE](LICENSE).
+
+<!--[]-->
 
