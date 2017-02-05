@@ -35,7 +35,7 @@ describe('validateBranch', () => {
   });
 
 
-  it('should show an info if the current branch matches the release branch', () => {
+  it('should show an info message if the current branch matches the release branch', () => {
     let exitCalled = false;
     revert = validateBranch.__set__({
       shell: {
