@@ -32,7 +32,7 @@
   },
   "scripts": {
     "pre-release": "npm-run-all verify test:coverage build ",
-    "_README": "echo Due to the fact the tests are executing in shell processes, we need to use NYC to get coverage infrormation.",
+    "_README": "echo Due to the fact the tests are executing in shell processes, we need to use NYC to get coverage information.",
     "build": "cross-env NODE_ENV=production npm run clean:prod",
     "clean:prod": "rimraf dist/",
     "commitmsg": "cz-customizable-ghooks",
