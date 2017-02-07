@@ -49,7 +49,7 @@ describe('corp-semantic-release', function () {
 
   it('should not change anything in dry mode', function () {
     commitFeat();
-    const out = shell.exec(`node ${__dirname}/../src/index.js -d`).output;
+    const out = semanticRelease(`-d`);
 
     expect(out).to.include('YOU ARE RUNNING IN DRY RUN MODE');
 
@@ -61,7 +61,7 @@ describe('corp-semantic-release', function () {
 
   it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function () {
     commitFeat();
-    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    semanticRelease();
     const expectedVersion = '1.0.0';
 
     // check Semantic Tag
@@ -79,7 +79,7 @@ describe('corp-semantic-release', function () {
 
   it('should run pre-commit script if required', function () {
     commitFeat();
-    const out = shell.exec(`node ${__dirname}/../src/index.js -v --pre-commit set-version`).output;
+    const out = semanticRelease(`-v --pre-commit set-version`);
 
     expect(out).to.include('this is my pre-commit script');
   });
@@ -89,13 +89,13 @@ describe('corp-semantic-release', function () {
     // pre-conditions
     shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
-    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    semanticRelease();
 
     const expectedVersion = '2.0.0';
 
     // actions
     commitFixWithBreakingChange();
-    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    semanticRelease();
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').output;
@@ -112,13 +112,13 @@ describe('corp-semantic-release', function () {
     // pre-conditions
     shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
-    shell.exec(`node ${__dirname}/../src/index.js -v --changelogpreset angular-bitbucket`).output;
+    semanticRelease(`--changelogpreset angular-bitbucket`);
 
     const expectedVersion = '2.0.0';
 
     // actions
     commitFixWithBreakingChange();
-    shell.exec(`node ${__dirname}/../src/index.js -v --changelogpreset angular-bitbucket`).output;
+    semanticRelease(`--changelogpreset angular-bitbucket`);
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').output;
@@ -134,7 +134,7 @@ describe('corp-semantic-release', function () {
 
   it('should detect release is not necessary', function () {
     commitNonReleaseTypes();
-    const out = shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    const out = semanticRelease(`-v`);
 
     expect(out).to.include('Release is not necessary at this point');
 
@@ -146,7 +146,7 @@ describe('corp-semantic-release', function () {
 
   it('should NOT make any change when we run multiple times and there are no relevant commits', function () {
     commitWithMessage('initial commit');
-    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    semanticRelease();
     const expectedVersion = '0.0.1';
 
     const gitStatus = shell.exec('git status').output;
@@ -158,8 +158,8 @@ describe('corp-semantic-release', function () {
     expectedVersionInPackageJson(expectedVersion);
 
 
-    // Then when I ran again
-    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    // Then when I run again...
+    semanticRelease();
     expectedVersionInPackageJson(expectedVersion);
     expect(gitTag).to.equal('');
     expectedVersionInPackageJson(expectedVersion);
@@ -172,7 +172,7 @@ describe('corp-semantic-release', function () {
     commitWithMessage('feat(accounts): commit 1');
     commitFixWithMessage('fix(exampleScope): add extra config');
 
-    shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    semanticRelease();
     const expectedVersion = '1.0.0';
 
     // version 1.0.0 expected
@@ -181,14 +181,14 @@ describe('corp-semantic-release', function () {
     expectedVersionInPackageJson(expectedVersion);
 
     // then run again. The same version 1.0.0 expected
-    out = shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    out = semanticRelease(`-v`);
     gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
 
     // run once more. The same version 1.0.0 expected
-    out = shell.exec(`node ${__dirname}/../src/index.js -v`).output;
+    out = semanticRelease(`-v`);
     gitTag = shell.exec('git tag | cat').output;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
@@ -200,12 +200,12 @@ describe('corp-semantic-release', function () {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('git checkout -b other-branch');
 
-    const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
+    const out = semanticRelease(`-v -d`);
 
     expect(out).to.include('You can only release from the master branch. Use option --branch to specify branch name.');
 
     shell.exec('git checkout master');
-    const outMaster = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
+    const outMaster = semanticRelease(`-v -d`);
     expect(outMaster).to.include('>>> Your release branch is: master');
   });
 
@@ -214,7 +214,7 @@ describe('corp-semantic-release', function () {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('rm package.json');
 
-    const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
+    const out = semanticRelease(`-v -d`);
 
     expect(out).to.include('Cant find your package.json');
   });
@@ -225,10 +225,53 @@ describe('corp-semantic-release', function () {
     shell.exec('rm package.json');
     shell.cp(__dirname + '/testData/package_noname.json', tempDir + '/package.json');
 
-    const out = shell.exec(`node ${__dirname}/../src/index.js -v -d`).output;
+    const out = semanticRelease(`-v -d`);
 
     expect(out).to.include('Minimum required fields in your package.json are name and version');
   });
+
+
+  it('should generate a changelog for 1 release by default', function () {
+    commitFeat();
+    semanticRelease();
+    expectedGitTag('1.0.0');
+
+    // Verify CHANGELOG.md starts with '<a name="1.0.0"></a>'
+    let changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0);
+
+    // Now clear the contents of the changelog, add another feature and release. We should only see the new release in the changelog.
+    shell.exec('echo > CHANGELOG.md');
+    commitFeat();
+    semanticRelease();
+    expectedGitTag('1.1.0');
+
+    changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);
+
+    // Old information is not regenerated, which means by default only 1 release is generated
+    expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(-1);
+  });
+
+
+  it('should allow a changelog to be generated for all releases', function () {
+    commitFeat();
+    semanticRelease();
+    // expectedGitTag('1.0.0');
+
+    // Now clear the contents of the changelog, add another feature and re-generate all releases
+    shell.exec('echo > CHANGELOG.md');
+    commitFeat();
+    semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
+    expectedGitTag('1.1.0');
+
+    let changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);  // First item in file
+
+    // Old information HAS been re-generated
+    expect(changelog).to.include('<a name="1.0.0"></a>');
+  });
+
 
   // ####### Helpers ######
 
@@ -236,6 +279,10 @@ describe('corp-semantic-release', function () {
   //   var branch = shell.exec('git branch').output;
   //   return branch;
   // }
+
+  function semanticRelease(params) {
+    return shell.exec(`node ${__dirname}/../src/index.js ${params || ''}`).output;
+  }
 
   function commitFeat() {
     writeFileSync('feat.txt', '');
