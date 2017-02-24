@@ -25,5 +25,5 @@ module.exports = {
   validateBranch,
   whatBump,
   writeChangelog,
-  log
+  log,
 };

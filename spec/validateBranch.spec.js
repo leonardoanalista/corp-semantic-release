@@ -16,14 +16,14 @@ describe('validateBranch', () => {
         exec: () => {
           // Set the current branch to foo
           return {
-            output: 'fooBranch\n'
+            output: 'fooBranch\n',
           };
         },
         exit: (code) => {
           exitCode = code;
           return;
-        }
-      }
+        },
+      },
     });
 
     let output = stdout.inspectSync(() => {
@@ -42,11 +42,11 @@ describe('validateBranch', () => {
         exec: () => {
           // Set the current branch to foo
           return {
-            output: 'fooBranch\n'
+            output: 'fooBranch\n',
           };
         },
-        exit: () => exitCalled = true
-      }
+        exit: () => exitCalled = true,
+      },
     });
 
     let output = stdout.inspectSync(() => {
@@ -56,5 +56,4 @@ describe('validateBranch', () => {
     expect(output[0]).to.include(`>>> Your release branch is: fooBranch`);
     expect(exitCalled).to.equal(false); // exit() is never called
   });
-
 });

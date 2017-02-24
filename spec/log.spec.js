@@ -6,7 +6,6 @@ const chalk = require('chalk');
 const stdout = require('test-console').stdout;
 
 describe('log', () => {
-
   let testData = [
     {desc: 'info', fn: log.info, colour: 'blue', colourFn: chalk.bold.cyan},
     {desc: 'success', fn: log.success, colour: 'green', colourFn: chalk.bold.green},
@@ -14,8 +13,7 @@ describe('log', () => {
     {desc: 'error', fn: log.error, colour: 'red', colourFn: chalk.bold.red},
   ];
 
-  testData.forEach(test => {
-
+  testData.forEach((test) => {
     describe(test.desc, () => {
       it(`should generate a ${test.colour} message`, () => {
         let output = stdout.inspectSync(() => {
@@ -32,5 +30,4 @@ describe('log', () => {
       });
     });
   });
-
 });

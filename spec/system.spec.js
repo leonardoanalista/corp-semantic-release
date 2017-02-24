@@ -9,20 +9,19 @@
   - after every test, temp dir and git repo are deleted.
 */
 
-var expect = require('chai').expect;
-var shell = require('shelljs');
-var fs = require('fs');
-var writeFileSync = fs.writeFileSync;
-var temp = require('temp').track();
+let expect = require('chai').expect;
+let shell = require('shelljs');
+let fs = require('fs');
+let writeFileSync = fs.writeFileSync;
+let temp = require('temp').track();
 
 
-describe('corp-semantic-release', function () {
-
+describe('corp-semantic-release', function() {
   // temp dir created for testing.
   // New git repo will be created here
-  var tempDir;
+  let tempDir;
 
-  beforeEach(function () {
+  beforeEach(function() {
     tempDir = temp.path({prefix: 'corp-sem-rel-'});
 
     shell.config.silent = !process.env.npm_config_debug;
@@ -39,15 +38,14 @@ describe('corp-semantic-release', function () {
     shell.exec('git config user.name "Leonardo C"');
   });
 
-  afterEach(function () {
+  afterEach(function() {
     shell.cd(__dirname);
     shell.rm('-rf', tempDir);
     tempDir = null;
   });
 
 
-
-  it('should not change anything in dry mode', function () {
+  it('should not change anything in dry mode', function() {
     commitFeat();
     const out = semanticRelease(`-d`);
 
@@ -59,7 +57,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function () {
+  it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function() {
     commitFeat();
     semanticRelease();
     const expectedVersion = '1.0.0';
@@ -77,7 +75,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should run pre-commit script if required', function () {
+  it('should run pre-commit script if required', function() {
     commitFeat();
     const out = semanticRelease(`-v --pre-commit set-version`);
 
@@ -85,7 +83,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should bump Major version due to Breaking Change and append contents to CHANGELOG.md', function () {
+  it('should bump Major version due to Breaking Change and append contents to CHANGELOG.md', function() {
     // pre-conditions
     shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
@@ -108,7 +106,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should generate a changelog for BitBucket with link references', function () {
+  it('should generate a changelog for BitBucket with link references', function() {
     // pre-conditions
     shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
@@ -132,7 +130,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should detect release is not necessary', function () {
+  it('should detect release is not necessary', function() {
     commitNonReleaseTypes();
     const out = semanticRelease(`-v`);
 
@@ -144,7 +142,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should NOT make any change when we run multiple times and there are no relevant commits', function () {
+  it('should NOT make any change when we run multiple times and there are no relevant commits', function() {
     commitWithMessage('initial commit');
     semanticRelease();
     const expectedVersion = '0.0.1';
@@ -166,9 +164,9 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should NOT make any change when we run multiple times and after a first minor release', function () {
-    var out;
-    var gitTag;
+  it('should NOT make any change when we run multiple times and after a first minor release', function() {
+    let out;
+    let gitTag;
     commitWithMessage('feat(accounts): commit 1');
     commitFixWithMessage('fix(exampleScope): add extra config');
 
@@ -193,10 +191,9 @@ describe('corp-semantic-release', function () {
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
-
   });
 
-  it('should run if branch is master', function () {
+  it('should run if branch is master', function() {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('git checkout -b other-branch');
 
@@ -210,7 +207,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should inform user if package.json does not exist', function () {
+  it('should inform user if package.json does not exist', function() {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('rm package.json');
 
@@ -220,7 +217,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should inform user if name is not present in package.json', function () {
+  it('should inform user if name is not present in package.json', function() {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('rm package.json');
     shell.cp(__dirname + '/testData/package_noname.json', tempDir + '/package.json');
@@ -231,7 +228,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should generate a changelog for 1 release by default', function () {
+  it('should generate a changelog for 1 release by default', function() {
     commitFeat();
     semanticRelease();
     expectedGitTag('1.0.0');
@@ -254,7 +251,7 @@ describe('corp-semantic-release', function () {
   });
 
 
-  it('should allow a changelog to be generated for all releases', function () {
+  it('should allow a changelog to be generated for all releases', function() {
     commitFeat();
     semanticRelease();
     // expectedGitTag('1.0.0');
@@ -333,8 +330,7 @@ describe('corp-semantic-release', function () {
   }
 
   function expectedVersionInPackageJson(expectedVersion) {
-    var newVersion = require(tempDir + '/package.json').version;
+    let newVersion = require(tempDir + '/package.json').version;
     expect(newVersion).to.equal(expectedVersion);
   }
-
 });

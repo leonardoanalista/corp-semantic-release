@@ -4,10 +4,9 @@ const shell = require('shelljs');
 const log = require('./log');
 
 module.exports = function bumpUpVersion(bumpType, latestTag) {
-
   log.info('>>> update version on package.json...');
   try {
-    var version = 'v1.0.0'; // First Release
+    let version = 'v1.0.0'; // First Release
 
     if (helpers.isFirstRelease(latestTag)) {
       shell.exec('npm version --no-git-tag-version ' + version).output.split('\n')[0];
