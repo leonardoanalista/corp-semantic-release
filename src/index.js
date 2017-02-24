@@ -120,7 +120,7 @@ function(err, results) {
   }
 
   // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
-  lib.runPreCommitScript(program.preCommit);
+  lib.runPreCommitScript(program.preCommit, version);
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
   if (!program.dryrun) lib.addFilesAndCreateTag(version);
 });

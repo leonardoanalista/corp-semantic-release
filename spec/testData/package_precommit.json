@@ -1,0 +1,12 @@
+{
+  "version": "0.0.1",
+  "name": "corp-semantic-release-test",
+  "author": "leonardoanalista",
+  "scripts": {
+    "set-version": "node precommit.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://any.git.host/owner-name/repo-name.git"
+  }
+}

@@ -75,11 +75,22 @@ describe('corp-semantic-release', function() {
   });
 
 
-  it('should run pre-commit script if required', function() {
+  it('should run pre-commit script and pass the version number to the npm script', function() {
     commitFeat();
     const out = semanticRelease(`-v --pre-commit set-version`);
 
-    expect(out).to.include('this is my pre-commit script');
+    expect(out).to.include('this is my pre-commit script v1.0.0');
+  });
+
+  it('should run pre-commit script and pass the version number to a node script referenced by the npm script', function() {
+    commitFeat();
+    shell.exec('rm package.json');
+    shell.cp(__dirname + '/testData/package_precommit.json', tempDir + '/package.json');
+    shell.cp(__dirname + '/testData/precommit.js', tempDir);
+
+    const out = semanticRelease(`-v --pre-commit set-version`);
+
+    expect(out).to.include('Inside precommit.js, version is v1.0.0');
   });
 
 
