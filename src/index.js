@@ -20,14 +20,15 @@ try {
 }
 
 const pkg = require(process.cwd() + '/package.json');
+const oldVersion = pkg.version;
 
-if (!pkg.name || !pkg.version) {
+if (!pkg.name || !oldVersion) {
   log.error('Minimum required fields in your package.json are name and version.');
   shell.exit(1);
 }
 
 program
-  .version(pkg.version)
+  .version(oldVersion)
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
   .option('--pre-commit [pre-commit]', 'Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: npm run [pre-commit]')
   .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
@@ -61,12 +62,8 @@ if (!lib.isReleaseNecessary(bumpType, latestTag, jsonCommits, program.verbose)) 
   shell.exit(0);
 }
 
-// ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION)
-if (!program.dryrun) {
-  version = lib.bumpUpVersion(bumpType, latestTag);
-} else {
-  version = '0.0.0-dryrun';
-}
+// ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION - but we remember the old version and restore at the end)
+version = lib.bumpUpVersion(bumpType, latestTag);
 
 async.series([
   // ### STEP 6 - get changelog contents
@@ -116,6 +113,10 @@ function(err, results) {
     lib.writeChangelog(changes, program.verbose); // it has to run after the version has been bumped.
   } else {
     log.info('>>> Changelog contents would have been: \n\n', changes);
+
+    // Ensure old package version is restored
+    log.info('>>> Resetting package.json to original version');
+    shell.exec('npm version --no-git-tag-version ' + oldVersion);
   }
 
   // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
