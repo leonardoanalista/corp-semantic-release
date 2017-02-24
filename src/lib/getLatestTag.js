@@ -8,13 +8,13 @@ module.exports = function getLatestTag(verbose) {
 
   const regex = /tag:\s*(.+?)[,\)]/gi;
   const cmd = 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"';
-  var data = shell.exec(cmd, {silent: true}).output;
-  var latestTag = null;
+  let data = shell.exec(cmd, {silent: true}).output;
+  let latestTag = null;
 
   data.split('\n').some(function(decorations) {
-    var match;
+    let match;
     while (match = regex.exec(decorations)) { // eslint-disable-line no-cond-assign
-      var tag = match[1];
+      let tag = match[1];
       if (semverValid(tag)) {
         latestTag = tag;
         return true;

@@ -2,9 +2,9 @@
 const log = require('./log');
 
 module.exports = function whatBump(parsedCommits) {
-  var type;
+  let type;
 
-  parsedCommits.every(function (commit) {
+  parsedCommits.every(function(commit) {
     if (commit.breaks.length) {
       type = 'major';
       return false;

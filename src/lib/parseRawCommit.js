@@ -8,9 +8,9 @@ module.exports = function parseRawCommit(raw) {
     return null;
   }
 
-  var lines = raw.split('\n');
-  var msg = {};
-  var match;
+  let lines = raw.split('\n');
+  let msg = {};
+  let match;
 
   msg.hash = lines.shift();
   msg.subject = lines.shift();
@@ -29,7 +29,7 @@ module.exports = function parseRawCommit(raw) {
       match.forEach(function(m) {
         if (m) {
           m.split(',').forEach(function(i) {
-            var issue = i.match(/\d+/);
+            let issue = i.match(/\d+/);
             if (issue) {
               msg.closes.push(parseInt(issue[0], 10));
             }

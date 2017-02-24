@@ -4,7 +4,7 @@ const shell = require('shelljs');
 const log = require('./log');
 
 module.exports = function addFilesAndCreateTag(newVersion) {
-  var code;
+  let code;
   // ###### Add edited files to git #####
   log.info('>>> About to add and commit package.json and CHANGELOG...');
   code = shell.exec('git add package.json CHANGELOG.md').code;

@@ -1,6 +1,10 @@
 {
-  "name": "corp-semantic-release",
   "description": "Semantic-release package for repositories inside private networks (e.g. corporations) or for non-GitHub repositories.",
+  "name": "corp-semantic-release",
+  "repository": {
+    "url": "https://github.com/leonardoanalista/corp-semantic-release.git",
+    "type": "git"
+  },
   "keywords": [
     "author",
     "automation",
@@ -25,10 +29,6 @@
   "main": "src/index.js",
   "bin": {
     "corp-semantic-release": "src/index.js"
-  },
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/leonardoanalista/corp-semantic-release.git"
   },
   "scripts": {
     "pre-release": "npm-run-all verify test:coverage build ",
@@ -93,7 +93,8 @@
     "nyc": "10.0.0",
     "rewire": "2.5.2",
     "rimraf": "2.5.4",
-    "test-console": "1.0.0"
+    "test-console": "1.0.0",
+    "eslint-config-google": "0.7.1"
   },
   "engines": {
     "node": ">= 4.0.0",

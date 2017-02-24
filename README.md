@@ -56,12 +56,50 @@ Of course you can change `corp-release` to any name you like.
 
 ## Options
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
-* `--pre-commit [pre-commit]`: Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: `npm run [pre-commit]`. If you need more hooks to be implemented please open an issue.
+* `--pre-commit [npm-script]`: Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: `npm run [pre-commit]`. If you need more hooks to be implemented please open an issue.
 * `-b [branch]` or `--branch [branch]`: Branch name allowed to run release. Default is `master`. If you want to release from another branch, you need to specify.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 * `--changelogpreset [preset]`: The conventional-changelog preset to use. Default is `angular`. `angular-bitbucket` is available for [BitBucket repositories](https://github.com/uglow/conventional-changelog-angular-bitbucket). Other presets can be installed, e.g: `npm i conventional-changelog-jquery` then pass this flag to the command: `--changelogpreset jquery`.
 
 **NOTE**: If you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.: `npm run corp-release -- -v -d`
+
+
+## Updating other files
+A pretty common requirement when updating the version number is to update other files with
+the same version number. There are two ways you can run your own scripts to update additional files:
+
+<details>
+<summary>Option 1 - NPM hook</summary>
+You can use NPM's built-in `(pre|post)version` [script-hook](https://docs.npmjs.com/cli/version) to run code before/just-after/after `package.json` is modified by `corp-semantic-release`.
+
+In the following example, `updateOtherFiles.js` does *NOT* receive the version as an argument but must query `package.json` to get the bumped version.
+```json
+
+"scripts": {
+  "corp-release": "corp-semantic-release",
+  "version": "node updateOtherFiles.js"
+}
+
+```
+</details>
+
+
+<details>
+<summary>Option 2 - `--pre-commit [npm-script]`</summary>
+`corp-semantic-release` also provides a `--pre-commit <NPM script>` option. The NPM script is passed the version 
+number as an argument to the script.
+
+```json
+
+"scripts": {
+  "corp-release": "corp-semantic-release --pre-commit updateFiles",
+  "updateFiles": "node updateOtherFiles.js"
+}
+
+```
+</details>
+
+Remember to stage the files using `git add <file-name>` after modifying the files, so that when `corp-semantic-release` commits the changes, all the changed files are commited.
 
 
 ## Contribute

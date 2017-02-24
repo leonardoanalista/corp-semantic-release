@@ -33,7 +33,7 @@ generator-confit:
     testDependencies: []
   verify:
     _version: 30ae86c5022840a01fc08833e238a82c683fa1c7
-    jsCodingStandard: ESLint
+    jsCodingStandard: Google
   documentation:
     _version: b1658da3278b16d1982212f5e8bc05348af20e0b
     generateDocs: false

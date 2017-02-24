@@ -1,18 +1,18 @@
 # START_CONFIT_GENERATED_CONTENT
 confit:
-  extends: &confit-extends 
-    - eslint:recommended
+  extends: &confit-extends
+    - google
     - plugin:node/recommended
-    
-  plugins: &confit-plugins 
+
+  plugins: &confit-plugins
     - node
-    
+
   env: &confit-env
     commonjs: true    # For Webpack, CommonJS
     node: true
     mocha: true
     es6: true
-    
+
   globals: &confit-globals {}
   parser: &confit-parser espree
 
@@ -51,3 +51,6 @@ rules:
   max-len:
     - warn
     - 200     # Line Length
+
+  require-jsdoc:
+    - off

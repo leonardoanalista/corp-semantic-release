@@ -11,5 +11,5 @@ module.exports = {
     if (code !== 0) {
       shell.exit(code);
     }
-  }
+  },
 };
