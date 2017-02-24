@@ -53,7 +53,7 @@ describe('corp-semantic-release', function() {
 
     // clean work directory
     const gitStatus = shell.exec('git status').output;
-    expect(gitStatus).to.include('nothing to commit, working directory clean');
+    expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
   });
 
 
@@ -138,7 +138,7 @@ describe('corp-semantic-release', function() {
 
     // clean work directory
     const gitStatus = shell.exec('git status').output;
-    expect(gitStatus).to.include('nothing to commit, working directory clean');
+    expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
   });
 
 
@@ -148,7 +148,7 @@ describe('corp-semantic-release', function() {
     const expectedVersion = '0.0.1';
 
     const gitStatus = shell.exec('git status').output;
-    expect(gitStatus).to.include('nothing to commit, working directory clean');
+    expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
 
     // no changes expected, no tags expected
     const gitTag = shell.exec('git tag | cat').output;
