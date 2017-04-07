@@ -110,7 +110,7 @@ function(err, results) {
 
   // ### STEP 7 - Write or Append (DESTRUCTIVE OPERATION)
   if (!program.dryrun) {
-    lib.writeChangelog(changes, program.verbose); // it has to run after the version has been bumped.
+    lib.writeChangelog(changes, program.releasecount === 0, program.verbose); // it has to run after the version has been bumped.
   } else {
     log.info('>>> Changelog contents would have been: \n\n', changes);
 
