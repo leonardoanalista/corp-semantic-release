@@ -15,6 +15,8 @@ let fs = require('fs');
 let writeFileSync = fs.writeFileSync;
 let temp = require('temp').track();
 
+let counter = 0;    // Used to create unique content to trigger git changes, to trigger semver bumps.
+
 
 describe('corp-semantic-release', function() {
   // temp dir created for testing.
@@ -258,26 +260,87 @@ describe('corp-semantic-release', function() {
     expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);
 
     // Old information is not regenerated, which means by default only 1 release is generated
-    expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(-1);
+    expect(changelog).not.to.include('<a name="1.0.0"></a>');
   });
 
 
   it('should allow a changelog to be generated for all releases', function() {
     commitFeat();
     semanticRelease();
-    // expectedGitTag('1.0.0');
+
+    let changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0);  // First item in file
 
     // Now clear the contents of the changelog, add another feature and re-generate all releases
     shell.exec('echo > CHANGELOG.md');
+    changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.equal('\n');
+
     commitFeat();
-    semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
+    semanticRelease(`--releasecount 0`);    // regenerate ALL releases (0 = all)
     expectedGitTag('1.1.0');
 
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').output;
     expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);  // First item in file
 
     // Old information HAS been re-generated
     expect(changelog).to.include('<a name="1.0.0"></a>');
+  });
+
+
+  it('should replace an existing changelog when re-generating it for all releases', function() {
+    shell.exec('echo foo bar > CHANGELOG.md');
+    let changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.equal('foo bar\n');
+
+    // Don't clear the contents of the changelog, add another feature and re-generate all releases
+    commitFeat();
+    semanticRelease();
+    expectedGitTag('1.0.0');
+
+    changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.include('<a name="1.0.0"></a>');
+    expect(changelog).to.include('foo bar');
+
+    commitFeat();
+    semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
+    expectedGitTag('1.1.0');
+
+    changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.include('<a name="1.1.0"></a>');
+    expect(changelog).to.include('<a name="1.0.0"></a>');
+    expect(changelog).not.to.include('foo bar');
+  });
+
+
+  it('should generate the specified number of releases', function() {
+    // Add two features, clear the log, add another feature then generate 2 releases (this one and the previous one)
+    commitFeat();
+    semanticRelease();
+    expectedGitTag('1.0.0');
+
+    commitFeat();
+    semanticRelease();
+    expectedGitTag('1.1.0');
+
+    let changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.include('<a name="1.1.0"></a>');
+    expect(changelog).to.include('<a name="1.0.0"></a>');
+
+    // Replace the log with junk, then append 2 releases
+    shell.exec('echo foo bar > CHANGELOG.md');
+    changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.equal('foo bar\n');
+
+    commitFeat();
+    semanticRelease(`--releasecount 2`);
+    expectedGitTag('1.2.0');
+
+    changelog = shell.exec('cat CHANGELOG.md').output;
+    expect(changelog).to.include('<a name="1.2.0"></a>');
+    expect(changelog).to.include('<a name="1.1.0"></a>');
+    expect(changelog).not.to.include('<a name="1.0.0"></a>');
+    expect(changelog).to.include('foo bar');
   });
 
 
@@ -293,35 +356,35 @@ describe('corp-semantic-release', function() {
   }
 
   function commitFeat() {
-    writeFileSync('feat.txt', '');
-    commitWithMessage('feat: my first feature');
+    writeFileSync('feat.txt', counter++);    // Produce a unique change to the file
+    return commitWithMessage('feat: my first feature');
   }
 
   function commitNonReleaseTypes() {
-    writeFileSync('docs.txt', '');
+    writeFileSync('docs.txt', counter++);
     commitWithMessage('docs: commit 01');
 
-    writeFileSync('styles.txt', '');
+    writeFileSync('styles.txt', counter++);
     commitWithMessage('styles: commit 02');
 
-    writeFileSync('chore.txt', '');
+    writeFileSync('chore.txt', counter++);
     commitWithMessage('chore: commit 03');
   }
 
   function commitFixWithMessage(msg) {
-    writeFileSync('fix.txt', '');
+    writeFileSync('fix.txt', counter++);
     commitWithMessageMultiline(`-m "${msg}"`);
   }
 
   function commitFixWithBreakingChange() {
-    writeFileSync('fix.txt', '');
+    writeFileSync('fix.txt', counter++);
     const msg = '-m "fix: issue in the app" -m "BREAKING CHANGE:" -m "This should bump major"';
 
     commitWithMessageMultiline(msg);
   }
 
   function commitWithMessage(msg) {
-    shell.exec(`git add --all && git commit -m "${msg}"`);
+    return shell.exec(`git add --all && git commit -m "${msg}"`).output;
   }
 
   function commitWithMessageMultiline(msg) {
