@@ -7,6 +7,7 @@ const getLatestTag = require('./getLatestTag');
 const helpers = require('./helpers');
 const isReleaseNecessary = require('./isReleaseNecessary');
 const parseRawCommit = require('./parseRawCommit');
+const runPostSuccessScript = require('./runPostSuccessScript');
 const runPreCommitScript = require('./runPreCommitScript');
 const validateBranch = require('./validateBranch');
 const whatBump = require('./whatBump');
@@ -21,6 +22,7 @@ module.exports = {
   helpers,
   isReleaseNecessary,
   parseRawCommit,
+  runPostSuccessScript,
   runPreCommitScript,
   validateBranch,
   whatBump,

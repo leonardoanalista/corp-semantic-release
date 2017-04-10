@@ -21,5 +21,8 @@ module.exports = function addFilesAndCreateTag(newVersion) {
 
   // ###### PUSH CHANGES #####
   log.info('>>...and push to remote...');
-  return shell.exec('git push && git push --tags').stdout;
+  code = shell.exec('git push && git push --tags').code;
+
+  log.info('>>...and exited with code', code);
+  return code;
 };

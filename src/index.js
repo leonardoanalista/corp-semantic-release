@@ -30,7 +30,8 @@ if (!pkg.name || !oldVersion) {
 program
   .version(oldVersion)
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
-  .option('--pre-commit [pre-commit]', 'Pre-commit hook [pre-commit]. Pass a string with the name of the npm script to run. it will run like this: npm run [pre-commit]')
+  .option('--pre-commit [npm-script]', 'Pre-commit hook. Pass the name of the npm script to run. It will run like this: npm run [pre-commit]')
+  .option('--post-success [npm-script]', 'Post success hook. Pass the name of the npm script to run. It will run like this: npm run [post-success]')
   .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
   .option('-v, --verbose', 'Prints debug info')
   .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket' +
@@ -119,8 +120,18 @@ function(err, results) {
     shell.exec('npm version --no-git-tag-version ' + oldVersion);
   }
 
-  // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION)
+  // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION?)
   lib.runPreCommitScript(program.preCommit, version);
+
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
-  if (!program.dryrun) lib.addFilesAndCreateTag(version);
+  let pushResultCode = 1; // Default to failure signal
+
+  if (!program.dryrun) {
+    pushResultCode = lib.addFilesAndCreateTag(version);
+  }
+
+  // ### STEP 10 - Run after successful push (DESTRUCTIVE OPERATION?)
+  if (pushResultCode === 0 || program.dryrun) {
+    lib.runPostSuccessScript(program.postSuccess, version);
+  }
 });
