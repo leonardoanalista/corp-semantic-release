@@ -49,12 +49,12 @@ describe('corp-semantic-release', function() {
 
   it('should not change anything in dry mode', function() {
     commitFeat();
-    const out = semanticRelease(`-d`);
+    const out = semanticRelease(`-d -v`);
 
     expect(out).to.include('YOU ARE RUNNING IN DRY RUN MODE');
 
     // clean work directory
-    const gitStatus = shell.exec('git status').output;
+    const gitStatus = shell.exec('git status').stdout;
     expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
   });
 
@@ -68,7 +68,7 @@ describe('corp-semantic-release', function() {
     expectedGitTag(expectedVersion);
 
     // Verify CHANGELOG.md
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.include(`# ${expectedVersion} (${today})`);
     expect(changelog).to.include('### Features\n\n');
     expect(changelog).to.include('my first feature');
@@ -109,7 +109,7 @@ describe('corp-semantic-release', function() {
     semanticRelease();
 
     // verify
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
 
     expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
     expect(changelog).to.include(`# [2.0.0](https://any.git.host/owner-name/repo-name/compare/v1.0.0...v${expectedVersion}) (${today})`);
@@ -132,7 +132,7 @@ describe('corp-semantic-release', function() {
     semanticRelease(`--changelogpreset angular-bitbucket`);
 
     // verify
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
 
     expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
     expect(changelog).to.include(`# [2.0.0](https://any.git.host/projects/owner-name/repos/repo-name/compare/diff?` +
@@ -150,7 +150,7 @@ describe('corp-semantic-release', function() {
     expect(out).to.include('Release is not necessary at this point');
 
     // clean work directory
-    const gitStatus = shell.exec('git status').output;
+    const gitStatus = shell.exec('git status').stdout;
     expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
   });
 
@@ -160,11 +160,11 @@ describe('corp-semantic-release', function() {
     semanticRelease();
     const expectedVersion = '0.0.1';
 
-    const gitStatus = shell.exec('git status').output;
+    const gitStatus = shell.exec('git status').stdout;
     expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
 
     // no changes expected, no tags expected
-    const gitTag = shell.exec('git tag | cat').output;
+    const gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.equal('');
     expectedVersionInPackageJson(expectedVersion);
 
@@ -187,20 +187,20 @@ describe('corp-semantic-release', function() {
     const expectedVersion = '1.0.0';
 
     // version 1.0.0 expected
-    gitTag = shell.exec('git tag | cat').output;
+    gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
 
     // then run again. The same version 1.0.0 expected
     out = semanticRelease(`-v`);
-    gitTag = shell.exec('git tag | cat').output;
+    gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
 
     // run once more. The same version 1.0.0 expected
     out = semanticRelease(`-v`);
-    gitTag = shell.exec('git tag | cat').output;
+    gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
     expect(out).to.include('Release is not necessary at this point');
@@ -247,7 +247,7 @@ describe('corp-semantic-release', function() {
     expectedGitTag('1.0.0');
 
     // Verify CHANGELOG.md starts with '<a name="1.0.0"></a>'
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0);
 
     // Now clear the contents of the changelog, add another feature and release. We should only see the new release in the changelog.
@@ -256,7 +256,7 @@ describe('corp-semantic-release', function() {
     semanticRelease();
     expectedGitTag('1.1.0');
 
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);
 
     // Old information is not regenerated, which means by default only 1 release is generated
@@ -268,19 +268,19 @@ describe('corp-semantic-release', function() {
     commitFeat();
     semanticRelease();
 
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0);  // First item in file
 
     // Now clear the contents of the changelog, add another feature and re-generate all releases
     shell.exec('echo > CHANGELOG.md');
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.equal('\n');
 
     commitFeat();
     semanticRelease(`--releasecount 0`);    // regenerate ALL releases (0 = all)
     expectedGitTag('1.1.0');
 
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);  // First item in file
 
     // Old information HAS been re-generated
@@ -290,7 +290,7 @@ describe('corp-semantic-release', function() {
 
   it('should replace an existing changelog when re-generating it for all releases', function() {
     shell.exec('echo foo bar > CHANGELOG.md');
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.equal('foo bar\n');
 
     // Don't clear the contents of the changelog, add another feature and re-generate all releases
@@ -298,7 +298,7 @@ describe('corp-semantic-release', function() {
     semanticRelease();
     expectedGitTag('1.0.0');
 
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.include('<a name="1.0.0"></a>');
     expect(changelog).to.include('foo bar');
 
@@ -306,7 +306,7 @@ describe('corp-semantic-release', function() {
     semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
     expectedGitTag('1.1.0');
 
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.include('<a name="1.1.0"></a>');
     expect(changelog).to.include('<a name="1.0.0"></a>');
     expect(changelog).not.to.include('foo bar');
@@ -323,20 +323,20 @@ describe('corp-semantic-release', function() {
     semanticRelease();
     expectedGitTag('1.1.0');
 
-    let changelog = shell.exec('cat CHANGELOG.md').output;
+    let changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.include('<a name="1.1.0"></a>');
     expect(changelog).to.include('<a name="1.0.0"></a>');
 
     // Replace the log with junk, then append 2 releases
     shell.exec('echo foo bar > CHANGELOG.md');
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.equal('foo bar\n');
 
     commitFeat();
     semanticRelease(`--releasecount 2`);
     expectedGitTag('1.2.0');
 
-    changelog = shell.exec('cat CHANGELOG.md').output;
+    changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.include('<a name="1.2.0"></a>');
     expect(changelog).to.include('<a name="1.1.0"></a>');
     expect(changelog).not.to.include('<a name="1.0.0"></a>');
@@ -347,12 +347,13 @@ describe('corp-semantic-release', function() {
   // ####### Helpers ######
 
   // function getBranchName() {
-  //   var branch = shell.exec('git branch').output;
+  //   var branch = shell.exec('git branch').stdout;
   //   return branch;
   // }
 
   function semanticRelease(params) {
-    return shell.exec(`node ${__dirname}/../src/index.js ${params || ''}`).output;
+    let result = shell.exec(`node ${__dirname}/../src/index.js ${params || ''}`);
+    return result.stdout;
   }
 
   function commitFeat() {
@@ -384,7 +385,7 @@ describe('corp-semantic-release', function() {
   }
 
   function commitWithMessage(msg) {
-    return shell.exec(`git add --all && git commit -m "${msg}"`).output;
+    return shell.exec(`git add --all && git commit -m "${msg}"`).stdout;
   }
 
   function commitWithMessageMultiline(msg) {
@@ -396,10 +397,10 @@ describe('corp-semantic-release', function() {
 
   function expectedGitTag(expectedVersion) {
     // check for new commit
-    let gitLog = shell.exec('git log | cat').output;
+    let gitLog = shell.exec('git log | cat').stdout;
     expect(gitLog).to.include(`chore(release): v${expectedVersion}`);
 
-    let gitTag = shell.exec('git tag | cat').output;
+    let gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.include('v' + expectedVersion);
   }
 

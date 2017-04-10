@@ -8,7 +8,7 @@ module.exports = function getLatestTag(verbose) {
 
   const regex = /tag:\s*(.+?)[,\)]/gi;
   const cmd = 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"';
-  let data = shell.exec(cmd, {silent: true}).output;
+  let data = shell.exec(cmd, {silent: true}).stdout;
   let latestTag = null;
 
   data.split('\n').some(function(decorations) {
