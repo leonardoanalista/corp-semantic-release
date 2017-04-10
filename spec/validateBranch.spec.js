@@ -13,12 +13,7 @@ describe('validateBranch', () => {
     let exitCode;
     revert = validateBranch.__set__({
       shell: {
-        exec: () => {
-          // Set the current branch to foo
-          return {
-            output: 'fooBranch\n',
-          };
-        },
+        exec: () => ({stdout: 'fooBranch\n'}),
         exit: (code) => {
           exitCode = code;
           return;
@@ -39,12 +34,7 @@ describe('validateBranch', () => {
     let exitCalled = false;
     revert = validateBranch.__set__({
       shell: {
-        exec: () => {
-          // Set the current branch to foo
-          return {
-            output: 'fooBranch\n',
-          };
-        },
+        exec: () => ({stdout: 'fooBranch\n'}),
         exit: () => exitCalled = true,
       },
     });

@@ -3,7 +3,7 @@ const parseRawCommit = require('./parseRawCommit');
 const shell = require('shelljs');
 
 module.exports = function getJsonCommits(latestTag) {
-  let rawCommits = shell.exec(`git log -E --format=%H==SPLIT==%B==END== ${latestTag}`, {silent: true}).output;
+  let rawCommits = shell.exec(`git log -E --format=%H==SPLIT==%B==END== ${latestTag}`, {silent: true}).stdout;
 
   let commits = rawCommits.split('==END==\n')
     .filter(function(raw) {

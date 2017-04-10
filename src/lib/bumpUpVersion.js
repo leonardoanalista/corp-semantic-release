@@ -9,9 +9,9 @@ module.exports = function bumpUpVersion(bumpType, latestTag) {
 
   try {
     if (helpers.isFirstRelease(latestTag)) {
-      shell.exec('npm version --no-git-tag-version ' + version).output.split('\n')[0];
+      shell.exec('npm version --no-git-tag-version ' + version).stdout.split('\n')[0];
     } else {
-      version = shell.exec('npm version --no-git-tag-version ' + bumpType).output.split('\n')[0];
+      version = shell.exec('npm version --no-git-tag-version ' + bumpType).stdout.split('\n')[0];
     }
   } catch (error) {
     log.error(error);
