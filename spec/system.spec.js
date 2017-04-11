@@ -345,19 +345,21 @@ describe('corp-semantic-release', function() {
   });
 
 
-  it('should run post-success script and pass the version number to the npm script when the git push command is successful', function() {
+  it('should only run post-success script when the git push command is successful', function() {
     commitFeat();
-    const out = semanticRelease(`-d --post-success do-publish`);
-
-    expect(out).to.include('just published via post-success script');
-  });
-
-  it('should not run post-success script when the previous step returns a non-zero code', function() {
-    commitFeat();
-    const out = semanticRelease(`-v --post-success do-publish`);
+    const out = semanticRelease(`--post-success do-publish -v`);
 
     expect(out).to.include('and exited with code 128');
-    expect(out).not.to.include('just published via post-success script');
+    expect(out).not.to.include('Skipping git push');
+    expect(out).not.to.include('Skipping post-success script');
+  });
+
+  it('should not run post-success script in dry mode', function() {
+    commitFeat();
+    const out = semanticRelease(`--post-success do-publish -d`);
+
+    expect(out).to.include('Skipping git push');
+    expect(out).to.include('Skipping post-success script');
   });
 
 

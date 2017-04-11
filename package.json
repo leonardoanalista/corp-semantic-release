@@ -92,6 +92,7 @@
     "cz-customizable": "5.0.0",
     "cz-customizable-ghooks": "1.5.0",
     "eslint": "3.19.0",
+    "eslint-config-google": "0.7.1",
     "eslint-plugin-node": "4.2.2",
     "husky": "0.13.3",
     "mocha": "3.2.0",
@@ -99,8 +100,7 @@
     "nyc": "10.2.0",
     "rewire": "2.5.2",
     "rimraf": "2.6.1",
-    "test-console": "1.0.0",
-    "eslint-config-google": "0.7.1"
+    "test-console": "1.0.0"
   },
   "engines": {
     "node": ">= 4.0.0",

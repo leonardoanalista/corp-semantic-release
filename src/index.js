@@ -121,17 +121,22 @@ function(err, results) {
   }
 
   // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION?)
-  lib.runPreCommitScript(program.preCommit, version);
-
-  // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
-  let pushResultCode = 1; // Default to failure signal
-
-  if (!program.dryrun) {
-    pushResultCode = lib.addFilesAndCreateTag(version);
+  if (program.dryRun) {
+    log.info('>>> Skipping pre-commit script');
+  } else {
+    lib.runScript(program.preCommit, 'pre-commit', version);
   }
 
-  // ### STEP 10 - Run after successful push (DESTRUCTIVE OPERATION?)
-  if (pushResultCode === 0 || program.dryrun) {
-    lib.runPostSuccessScript(program.postSuccess, version);
+  // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
+  if (!program.dryrun) {
+    let pushResultCode = lib.addFilesAndCreateTag(version);
+
+    // ### STEP 10 - Run after successful push (DESTRUCTIVE OPERATION)
+    if (pushResultCode === 0) {
+      lib.runScript(program.postSuccess, 'post-success', version);
+    }
+  } else {
+    log.info('>>> Skipping git push');
+    log.info('>>> Skipping post-success script');
   }
 });
