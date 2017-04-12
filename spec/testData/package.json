@@ -3,7 +3,8 @@
   "name": "corp-semantic-release-test",
   "author": "leonardoanalista",
   "scripts": {
-    "set-version": "echo 'this is my pre-commit script'"
+    "set-version": "echo 'this is my pre-commit script'",
+    "do-publish": "echo 'just published via post-success script'"
   },
   "repository": {
     "type": "git",

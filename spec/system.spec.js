@@ -84,6 +84,7 @@ describe('corp-semantic-release', function() {
     expect(out).to.include('this is my pre-commit script v1.0.0');
   });
 
+
   it('should run pre-commit script and pass the version number to a node script referenced by the npm script', function() {
     commitFeat();
     shell.exec('rm package.json');
@@ -341,6 +342,24 @@ describe('corp-semantic-release', function() {
     expect(changelog).to.include('<a name="1.1.0"></a>');
     expect(changelog).not.to.include('<a name="1.0.0"></a>');
     expect(changelog).to.include('foo bar');
+  });
+
+
+  it('should only run post-success script when the git push command is successful', function() {
+    commitFeat();
+    const out = semanticRelease(`--post-success do-publish -v`);
+
+    expect(out).to.include('and exited with code 128');
+    expect(out).not.to.include('Skipping git push');
+    expect(out).not.to.include('Skipping post-success script');
+  });
+
+  it('should not run post-success script in dry mode', function() {
+    commitFeat();
+    const out = semanticRelease(`--post-success do-publish -d`);
+
+    expect(out).to.include('Skipping git push');
+    expect(out).to.include('Skipping post-success script');
   });
 
 
