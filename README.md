@@ -56,8 +56,8 @@ Of course you can change `corp-release` to any name you like.
 
 ## Options
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
-* `--pre-commit [npm-script]`: Pre-commit hook. Pass the name of the npm script to run. It will run like this: `npm run [pre-commit]`.
-* `--post-success [npm-script]`: Post-success hook (after `git push` completes successfully, or in dry-run mode). Pass the name of the npm script to run. It will run like this: `npm run [post-commit]`. If you need more hooks to be implemented please open an issue.
+* `--pre-commit [npm-script]`: Pre-commit hook. Pass the name of the npm script to run. It will run like this: `npm run [npm-script]`.
+* `--post-success [command]`: Post-success hook (after `git push` completes successfully). Pass a command to run as the argument. Eg: `--post-success "npm publish"`.
 * `-b [branch]` or `--branch [branch]`: Branch name allowed to run release. Default is `master`. If you want to release from another branch, you need to specify. 
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 * `--changelogpreset [preset]`: The conventional-changelog preset to use. Default is `angular`. `angular-bitbucket` is available for [BitBucket repositories](https://github.com/uglow/conventional-changelog-angular-bitbucket). Other presets can be installed, e.g: `npm i conventional-changelog-jquery` then pass this flag to the command: `--changelogpreset jquery`.

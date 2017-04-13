@@ -124,7 +124,7 @@ function(err, results) {
   if (program.dryRun) {
     log.info('>>> Skipping pre-commit script');
   } else {
-    lib.runScript(program.preCommit, 'pre-commit', version);
+    lib.runPreCommitScript(program.preCommit, 'pre-commit', version);
   }
 
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
@@ -133,10 +133,11 @@ function(err, results) {
 
     // ### STEP 10 - Run after successful push (DESTRUCTIVE OPERATION)
     if (pushResultCode === 0) {
-      lib.runScript(program.postSuccess, 'post-success', version);
+      log.info(`>>> about to run "post-success" command "${program.postSuccess}"`);
+      shell.exec(program.postSuccess);
     }
   } else {
     log.info('>>> Skipping git push');
-    log.info('>>> Skipping post-success script');
+    log.info('>>> Skipping post-success command');
   }
 });
