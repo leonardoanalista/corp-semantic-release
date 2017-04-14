@@ -351,15 +351,15 @@ describe('corp-semantic-release', function() {
 
     expect(out).to.include('and exited with code 128');
     expect(out).not.to.include('Skipping git push');
-    expect(out).not.to.include('Skipping post-success script');
+    expect(out).not.to.include('Skipping post-success command');
   });
 
   it('should not run post-success script in dry mode', function() {
     commitFeat();
-    const out = semanticRelease(`--post-success do-publish -d`);
+    const out = semanticRelease(`--post-success "npm run dopublish" -d`);
 
     expect(out).to.include('Skipping git push');
-    expect(out).to.include('Skipping post-success script');
+    expect(out).to.include('Skipping post-success command');
   });
 
 
