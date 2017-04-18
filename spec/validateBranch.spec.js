@@ -9,7 +9,7 @@ describe('validateBranch', () => {
 
   afterEach(() => revert());    // revert the mocking of anything
 
-  it('should show a message if the current branch is not the release branch and exit', () => {
+  it('should show a message if the current branch is not the release branch and exit with 0', () => {
     let exitCode;
     revert = validateBranch.__set__({
       shell: {
@@ -26,7 +26,7 @@ describe('validateBranch', () => {
     });
 
     expect(output[0]).to.include(`You can only release from the bar branch. Use option --branch to specify branch name.`);
-    expect(exitCode).to.equal(1);
+    expect(exitCode).to.equal(0);
   });
 
 

@@ -207,16 +207,18 @@ describe('corp-semantic-release', function() {
     expect(out).to.include('Release is not necessary at this point');
   });
 
-  it('should run if branch is master', function() {
+  it('should only run if branch is master', function() {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('git checkout -b other-branch');
 
-    const out = semanticRelease(`-v -d`);
+    const out = semanticRelease(`-v -d --post-success "echo foo"`);
 
+    expect(out).not.to.include('Skipping post-success command');
     expect(out).to.include('You can only release from the master branch. Use option --branch to specify branch name.');
 
     shell.exec('git checkout master');
-    const outMaster = semanticRelease(`-v -d`);
+    const outMaster = semanticRelease(`-v -d --post-success "echo foo"`);
+    expect(outMaster).to.include('Skipping post-success command');
     expect(outMaster).to.include('>>> Your release branch is: master');
   });
 
