@@ -9,7 +9,7 @@ module.exports = function validateBranch(branch) {
 
   if (branch !== currentBranch) {
     log.error(`You can only release from the ${branch} branch. Use option --branch to specify branch name.`);
-    shell.exit(1);
+    shell.exit(0);
   } else {
     log.info(`>>> Your release branch is: ${branch}`);
   }
