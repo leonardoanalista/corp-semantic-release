@@ -31,12 +31,13 @@ program
   .version(oldVersion)
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
   .option('--pre-commit [npm-script]', 'Pre-commit hook. Pass the name of the npm script to run. It will run like this: npm run [pre-commit]')
-  .option('--post-success [npm-script]', 'Post success hook. Pass the name of the npm script to run. It will run like this: npm run [post-success]')
+  .option('--post-success [command]', 'Post-success hook (after git push completes successfully). Pass a command to run as the argument. Eg: --post-success "npm publish"')
   .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
   .option('-v, --verbose', 'Prints debug info')
   .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket' +
     ' is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')
   .option('-r, --releasecount [number]', 'How many releases of changelog you want to generate.', parseInt)
+  .option('--mock-push [return code]', 'Used in testing to mock git push, the mock will return [return code]', parseInt)
   .parse(process.argv);
 
 if (program.dryrun) {
@@ -121,23 +122,27 @@ function(err, results) {
   }
 
   // ### STEP 8 - Run if any pre commit script has been specified (DESTRUCTIVE OPERATION?)
-  if (program.dryRun) {
-    log.info('>>> Skipping pre-commit script');
-  } else {
-    lib.runPreCommitScript(program.preCommit, 'pre-commit', version);
+  if (program.preCommit) {
+    if (program.dryRun) {
+      log.info('>>> Skipping pre-commit script');
+    } else {
+      lib.runScript(`npm run ${program.preCommit} -- ${version}`, 'pre-commit');
+    }
   }
 
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
   if (!program.dryrun) {
-    let pushResultCode = lib.addFilesAndCreateTag(version);
-
-    // ### STEP 10 - Run after successful push (DESTRUCTIVE OPERATION)
-    if (pushResultCode === 0) {
-      log.info(`>>> about to run "post-success" command "${program.postSuccess}"`);
-      shell.exec(program.postSuccess);
-    }
+    lib.addFilesAndCreateTag(version, program.mockPush);
   } else {
     log.info('>>> Skipping git push');
-    log.info('>>> Skipping post-success command');
+  }
+
+  // ### STEP 10 - Run after successful push (DESTRUCTIVE OPERATION)
+  if (program.postSuccess) {
+    if (!program.dryrun) {
+      lib.runScript(program.postSuccess, 'post-success');
+    } else {
+      log.info('>>> Skipping post-success command');
+    }
   }
 });
