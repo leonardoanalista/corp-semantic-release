@@ -3,7 +3,7 @@ const terminateProcess = require('./helpers').terminateProcess;
 const shell = require('shelljs');
 const log = require('./log');
 
-module.exports = function addFilesAndCreateTag(newVersion) {
+module.exports = function addFilesAndCreateTag(newVersion, mockPush) {
   let code;
   // ###### Add edited files to git #####
   log.info('>>> About to add and commit package.json and CHANGELOG...');
@@ -21,8 +21,13 @@ module.exports = function addFilesAndCreateTag(newVersion) {
 
   // ###### PUSH CHANGES #####
   log.info('>>...and push to remote...');
-  code = shell.exec('git push && git push --tags').code;
+  if (mockPush === undefined) {
+    code = shell.exec('git push && git push --tags').code;
+  } else {
+    log.info(`mocking git push with return code ${mockPush}`);
+    code = mockPush;
+  }
+  terminateProcess(code);
 
-  log.info('>>...and exited with code', code);
   return code;
 };

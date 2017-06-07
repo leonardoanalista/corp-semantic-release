@@ -49,9 +49,9 @@ describe('corp-semantic-release', function() {
 
   it('should not change anything in dry mode', function() {
     commitFeat();
-    const out = semanticRelease(`-d -v`);
+    const result = semanticRelease(`-d -v`);
 
-    expect(out).to.include('YOU ARE RUNNING IN DRY RUN MODE');
+    expect(result.stdout).to.include('YOU ARE RUNNING IN DRY RUN MODE');
 
     // clean work directory
     const gitStatus = shell.exec('git status').stdout;
@@ -61,7 +61,9 @@ describe('corp-semantic-release', function() {
 
   it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function() {
     commitFeat();
-    semanticRelease();
+    const result = semanticRelease();
+    expect(result.code).to.be.equal(0);
+
     const expectedVersion = '1.0.0';
 
     // check Semantic Tag
@@ -79,9 +81,10 @@ describe('corp-semantic-release', function() {
 
   it('should run pre-commit script and pass the version number to the npm script', function() {
     commitFeat();
-    const out = semanticRelease(`-v --pre-commit set-version`);
+    const result = semanticRelease(`-v --pre-commit set-version`);
+    expect(result.code).to.be.equal(0);
 
-    expect(out).to.include('this is my pre-commit script v1.0.0');
+    expect(result.stdout).to.include('this is my pre-commit script v1.0.0');
   });
 
 
@@ -91,9 +94,10 @@ describe('corp-semantic-release', function() {
     shell.cp(__dirname + '/testData/package_precommit.json', tempDir + '/package.json');
     shell.cp(__dirname + '/testData/precommit.js', tempDir);
 
-    const out = semanticRelease(`-v --pre-commit set-version`);
+    const result = semanticRelease(`-v --pre-commit set-version`);
+    expect(result.code).to.be.equal(0);
 
-    expect(out).to.include('Inside precommit.js, version is v1.0.0');
+    expect(result.stdout).to.include('Inside precommit.js, version is v1.0.0');
   });
 
 
@@ -101,13 +105,15 @@ describe('corp-semantic-release', function() {
     // pre-conditions
     shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
 
     const expectedVersion = '2.0.0';
 
     // actions
     commitFixWithBreakingChange();
-    semanticRelease();
+    result = semanticRelease();
+    expect(result.code).to.be.equal(0);
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -124,13 +130,15 @@ describe('corp-semantic-release', function() {
     // pre-conditions
     shell.cp(__dirname + '/testData/CHANGELOG.md', tempDir);
     commitFeat();
-    semanticRelease(`--changelogpreset angular-bitbucket`);
+    let result = semanticRelease(`--changelogpreset angular-bitbucket`);
+    expect(result.code).to.be.equal(0);
 
     const expectedVersion = '2.0.0';
 
     // actions
     commitFixWithBreakingChange();
-    semanticRelease(`--changelogpreset angular-bitbucket`);
+    result = semanticRelease(`--changelogpreset angular-bitbucket`);
+    expect(result.code).to.be.equal(0);
 
     // verify
     let changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -146,9 +154,10 @@ describe('corp-semantic-release', function() {
 
   it('should detect release is not necessary', function() {
     commitNonReleaseTypes();
-    const out = semanticRelease(`-v`);
+    const result = semanticRelease(`-v`);
+    expect(result.code).to.be.equal(0);
 
-    expect(out).to.include('Release is not necessary at this point');
+    expect(result.stdout).to.include('Release is not necessary at this point');
 
     // clean work directory
     const gitStatus = shell.exec('git status').stdout;
@@ -158,7 +167,9 @@ describe('corp-semantic-release', function() {
 
   it('should NOT make any change when we run multiple times and there are no relevant commits', function() {
     commitWithMessage('initial commit');
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
+
     const expectedVersion = '0.0.1';
 
     const gitStatus = shell.exec('git status').stdout;
@@ -171,7 +182,9 @@ describe('corp-semantic-release', function() {
 
 
     // Then when I run again...
-    semanticRelease();
+    result = semanticRelease();
+    expect(result.code).to.be.equal(0);
+
     expectedVersionInPackageJson(expectedVersion);
     expect(gitTag).to.equal('');
     expectedVersionInPackageJson(expectedVersion);
@@ -179,12 +192,12 @@ describe('corp-semantic-release', function() {
 
 
   it('should NOT make any change when we run multiple times and after a first minor release', function() {
-    let out;
     let gitTag;
     commitWithMessage('feat(accounts): commit 1');
     commitFixWithMessage('fix(exampleScope): add extra config');
 
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
     const expectedVersion = '1.0.0';
 
     // version 1.0.0 expected
@@ -193,33 +206,37 @@ describe('corp-semantic-release', function() {
     expectedVersionInPackageJson(expectedVersion);
 
     // then run again. The same version 1.0.0 expected
-    out = semanticRelease(`-v`);
+    result = semanticRelease(`-v`);
+    expect(result.code).to.be.equal(0);
     gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
-    expect(out).to.include('Release is not necessary at this point');
+    expect(result.stdout).to.include('Release is not necessary at this point');
 
     // run once more. The same version 1.0.0 expected
-    out = semanticRelease(`-v`);
+    result = semanticRelease(`-v`);
+    expect(result.code).to.be.equal(0);
     gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.equal(`v${expectedVersion}\n`);
     expectedVersionInPackageJson(expectedVersion);
-    expect(out).to.include('Release is not necessary at this point');
+    expect(result.stdout).to.include('Release is not necessary at this point');
   });
 
   it('should only run if branch is master', function() {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('git checkout -b other-branch');
 
-    const out = semanticRelease(`-v -d --post-success "echo foo"`);
+    const result = semanticRelease(`-v -d --post-success "echo foo"`);
+    expect(result.code).to.be.equal(0);
 
-    expect(out).not.to.include('Skipping post-success command');
-    expect(out).to.include('You can only release from the master branch. Use option --branch to specify branch name.');
+    expect(result.stdout).not.to.include('Skipping post-success command');
+    expect(result.stdout).to.include('You can only release from the master branch. Use option --branch to specify branch name.');
 
     shell.exec('git checkout master');
-    const outMaster = semanticRelease(`-v -d --post-success "echo foo"`);
-    expect(outMaster).to.include('Skipping post-success command');
-    expect(outMaster).to.include('>>> Your release branch is: master');
+    const resultMaster = semanticRelease(`-v -d --post-success "echo foo"`);
+    expect(resultMaster.code).to.be.equal(0);
+    expect(resultMaster.stdout).to.include('Skipping post-success command');
+    expect(resultMaster.stdout).to.include('>>> Your release branch is: master');
   });
 
 
@@ -227,9 +244,10 @@ describe('corp-semantic-release', function() {
     commitWithMessage('feat(accounts): commit 1');
     shell.exec('rm package.json');
 
-    const out = semanticRelease(`-v -d`);
+    const result = semanticRelease(`-v -d`);
+    expect(result.code).not.to.be.equal(0);
 
-    expect(out).to.include('Cant find your package.json');
+    expect(result.stdout).to.include('Cant find your package.json');
   });
 
 
@@ -238,15 +256,18 @@ describe('corp-semantic-release', function() {
     shell.exec('rm package.json');
     shell.cp(__dirname + '/testData/package_noname.json', tempDir + '/package.json');
 
-    const out = semanticRelease(`-v -d`);
+    const result = semanticRelease(`-v -d`);
+    expect(result.code).not.to.be.equal(0);
 
-    expect(out).to.include('Minimum required fields in your package.json are name and version');
+    expect(result.stdout).to.include('Minimum required fields in your package.json are name and version');
   });
 
 
   it('should generate a changelog for 1 release by default', function() {
     commitFeat();
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
+
     expectedGitTag('1.0.0');
 
     // Verify CHANGELOG.md starts with '<a name="1.0.0"></a>'
@@ -256,7 +277,9 @@ describe('corp-semantic-release', function() {
     // Now clear the contents of the changelog, add another feature and release. We should only see the new release in the changelog.
     shell.exec('echo > CHANGELOG.md');
     commitFeat();
-    semanticRelease();
+    result = semanticRelease();
+    expect(result.code).to.be.equal(0);
+
     expectedGitTag('1.1.0');
 
     changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -269,7 +292,8 @@ describe('corp-semantic-release', function() {
 
   it('should allow a changelog to be generated for all releases', function() {
     commitFeat();
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
 
     let changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0);  // First item in file
@@ -280,7 +304,9 @@ describe('corp-semantic-release', function() {
     expect(changelog).to.equal('\n');
 
     commitFeat();
-    semanticRelease(`--releasecount 0`);    // regenerate ALL releases (0 = all)
+    result = semanticRelease(`--releasecount 0`);    // regenerate ALL releases (0 = all)
+    expect(result.code).to.be.equal(0);
+
     expectedGitTag('1.1.0');
 
     changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -298,7 +324,9 @@ describe('corp-semantic-release', function() {
 
     // Don't clear the contents of the changelog, add another feature and re-generate all releases
     commitFeat();
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
+
     expectedGitTag('1.0.0');
 
     changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -306,7 +334,9 @@ describe('corp-semantic-release', function() {
     expect(changelog).to.include('foo bar');
 
     commitFeat();
-    semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
+    result = semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
+    expect(result.code).to.be.equal(0);
+
     expectedGitTag('1.1.0');
 
     changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -319,11 +349,13 @@ describe('corp-semantic-release', function() {
   it('should generate the specified number of releases', function() {
     // Add two features, clear the log, add another feature then generate 2 releases (this one and the previous one)
     commitFeat();
-    semanticRelease();
+    let result = semanticRelease();
+    expect(result.code).to.be.equal(0);
     expectedGitTag('1.0.0');
 
     commitFeat();
-    semanticRelease();
+    result = semanticRelease();
+    expect(result.code).to.be.equal(0);
     expectedGitTag('1.1.0');
 
     let changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -336,7 +368,8 @@ describe('corp-semantic-release', function() {
     expect(changelog).to.equal('foo bar\n');
 
     commitFeat();
-    semanticRelease(`--releasecount 2`);
+    result = semanticRelease(`--releasecount 2`);
+    expect(result.code).to.be.equal(0);
     expectedGitTag('1.2.0');
 
     changelog = shell.exec('cat CHANGELOG.md').stdout;
@@ -347,21 +380,36 @@ describe('corp-semantic-release', function() {
   });
 
 
-  it('should only run post-success script when the git push command is successful', function() {
+  it('should run post-success script when the git push command is successful', function() {
     commitFeat();
-    const out = semanticRelease(`--post-success do-publish -v`);
+    const result = semanticRelease(`--post-success "npm run do-publish" -v`);
+    expect(result.code).to.be.equal(0);
 
-    expect(out).to.include('and exited with code 128');
-    expect(out).not.to.include('Skipping git push');
-    expect(out).not.to.include('Skipping post-success command');
+    expect(result.stdout).to.include('just published via post-success script');
+  });
+
+  it('should not run post-success script when the git push command fails', function() {
+    commitFeat();
+    const result = semanticRelease(`--mock-push 1 --post-success "npm run do-publish" -v`);
+    expect(result.code).not.to.be.equal(0);
+
+    expect(result.stdout).not.to.include('just published via post-success script');
   });
 
   it('should not run post-success script in dry mode', function() {
     commitFeat();
-    const out = semanticRelease(`--post-success "npm run dopublish" -d`);
+    const result = semanticRelease(`--post-success "npm run do-publish" -d`);
+    expect(result.code).to.be.equal(0);
 
-    expect(out).to.include('Skipping git push');
-    expect(out).to.include('Skipping post-success command');
+    expect(result.stdout).to.include('Skipping post-success command');
+    expect(result.stdout).not.to.include('just published via post-success script');
+  });
+
+  it('should fail if post-success script fails', function() {
+    commitFeat();
+    const result = semanticRelease(`--post-success "non-existing-command"`);
+
+    expect(result.code).not.to.equal(0);
   });
 
 
@@ -373,8 +421,7 @@ describe('corp-semantic-release', function() {
   // }
 
   function semanticRelease(params) {
-    let result = shell.exec(`node ${__dirname}/../src/index.js ${params || ''}`);
-    return result.stdout;
+    return shell.exec(`node ${__dirname}/../src/index.js --mock-push 0 ${params || ''}`);
   }
 
   function commitFeat() {
