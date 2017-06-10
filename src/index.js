@@ -32,7 +32,7 @@ program
   .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
   .option('--pre-commit [npm-script]', 'Pre-commit hook. Pass the name of the npm script to run. It will run like this: npm run [pre-commit]')
   .option('--post-success [command]', 'Post-success hook (after git push completes successfully). Pass a command to run as the argument. Eg: --post-success "npm publish"')
-  .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify.')
+  .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify. Use "*" to allow any branch')
   .option('-v, --verbose', 'Prints debug info')
   .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket' +
     ' is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')

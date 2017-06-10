@@ -46,4 +46,19 @@ describe('validateBranch', () => {
     expect(output[0]).to.include(`>>> Your release branch is: fooBranch`);
     expect(exitCalled).to.equal(false); // exit() is never called
   });
+
+  it('should allow release from any branch when option --branch is "*"', () => {
+    let exitCalled = false;
+
+    revert = validateBranch.__set__({
+      shell: {
+        exit: () => exitCalled = true,
+      },
+    });
+
+    const result = validateBranch('*');
+
+    expect(result).to.equal(null);
+    expect(exitCalled).to.equal(false);
+  });
 });

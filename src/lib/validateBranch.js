@@ -4,6 +4,10 @@ const log = require('./log');
 let shell = require('shelljs');   // Make this a variable to permit mocking during testing
 
 module.exports = function validateBranch(branch) {
+  if (branch === '*') {
+    return null;
+  }
+
   shell.exec('git branch').stdout;
   let currentBranch = shell.exec('git rev-parse --abbrev-ref HEAD').stdout.split('\n')[0];
 
