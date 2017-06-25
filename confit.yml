@@ -2,7 +2,7 @@ generator-confit:
   app:
     _version: f02196cc5cb7941ca46ec46d23bd6aef0dfcaca0
     buildProfile: Latest
-    copyrightOwner: Leonardo Correa
+    copyrightOwner: Developers who contribute to this project
     license: MIT
     projectType: node
     publicRepository: true

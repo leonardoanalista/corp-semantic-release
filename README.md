@@ -58,7 +58,7 @@ Of course you can change `corp-release` to any name you like.
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
 * `--pre-commit [npm-script]`: Pre-commit hook. Pass the name of the npm script to run. It will run like this: `npm run [npm-script]`.
 * `--post-success [command]`: Post-success hook (after `git push` completes successfully). Pass a command to run as the argument. Eg: `--post-success "npm publish"`.
-* `-b [branch]` or `--branch [branch]`: Branch name allowed to run release. Default is `master`. If you want to release from another branch, you need to specify. 
+* `-b [branch]` or `--branch [branch]`: Branch name allowed to run release. Default is `master`. If you want to release from another branch, you need to specify. Use "*" to allow any branch - Useful for Jenkins as git does a revision check-out.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 * `--changelogpreset [preset]`: The conventional-changelog preset to use. Default is `angular`. `angular-bitbucket` is available for [BitBucket repositories](https://github.com/uglow/conventional-changelog-angular-bitbucket). Other presets can be installed, e.g: `npm i conventional-changelog-jquery` then pass this flag to the command: `--changelogpreset jquery`.
 * `-r [num]` or `--releasecount [num]`: How many releases of changelog you want to generate. It counts from the upcoming release. Useful when you forgot to generate any previous changelog. Set to 0 to regenerate all (will overwrite any existing changelog!).
@@ -88,7 +88,7 @@ In the following example, `updateOtherFiles.js` does *NOT* receive the version a
 
 <details>
 <summary>Option 2 - `--pre-commit [npm-script]`</summary>
-`corp-semantic-release` also provides a `--pre-commit <NPM script>` option. The NPM script is passed the version 
+`corp-semantic-release` also provides a `--pre-commit <NPM script>` option. The NPM script is passed the version
 number as an argument to the script.
 
 ```json
