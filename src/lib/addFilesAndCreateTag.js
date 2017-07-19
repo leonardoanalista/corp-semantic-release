@@ -11,7 +11,7 @@ module.exports = function addFilesAndCreateTag(newVersion, mockPush) {
   terminateProcess(code);
 
   // ###### Commit files #####
-  code = shell.exec('git commit -m "chore(release): ' + newVersion + '"').code;
+  code = shell.exec('git commit -m "chore(release): ' + newVersion + ' [ci skip]"').code;
   terminateProcess(code);
 
   // ###### TAG NEW VERSION #####
