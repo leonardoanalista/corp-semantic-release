@@ -1,7 +1,7 @@
 'use strict';
 
 const log = require('./log');
-let shell = require('shelljs');   // Make this a variable to permit mocking during testing
+let shell = require('shelljs'); // Make this a variable to permit mocking during testing
 
 module.exports = function validateBranch(branch) {
   if (branch === '*') {

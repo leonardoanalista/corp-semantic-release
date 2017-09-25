@@ -15,7 +15,7 @@ let fs = require('fs');
 let writeFileSync = fs.writeFileSync;
 let temp = require('temp').track();
 
-let counter = 0;    // Used to create unique content to trigger git changes, to trigger semver bumps.
+let counter = 0; // Used to create unique content to trigger git changes, to trigger semver bumps.
 
 
 describe('corp-semantic-release', function() {
@@ -296,7 +296,7 @@ describe('corp-semantic-release', function() {
     expect(result.code).to.be.equal(0);
 
     let changelog = shell.exec('cat CHANGELOG.md').stdout;
-    expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0);  // First item in file
+    expect(changelog.indexOf('<a name="1.0.0"></a>')).to.equal(0); // First item in file
 
     // Now clear the contents of the changelog, add another feature and re-generate all releases
     shell.exec('echo > CHANGELOG.md');
@@ -304,13 +304,13 @@ describe('corp-semantic-release', function() {
     expect(changelog).to.equal('\n');
 
     commitFeat();
-    result = semanticRelease(`--releasecount 0`);    // regenerate ALL releases (0 = all)
+    result = semanticRelease(`--releasecount 0`); // regenerate ALL releases (0 = all)
     expect(result.code).to.be.equal(0);
 
     expectedGitTag('1.1.0');
 
     changelog = shell.exec('cat CHANGELOG.md').stdout;
-    expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0);  // First item in file
+    expect(changelog.indexOf('<a name="1.1.0"></a>')).to.equal(0); // First item in file
 
     // Old information HAS been re-generated
     expect(changelog).to.include('<a name="1.0.0"></a>');
@@ -334,7 +334,7 @@ describe('corp-semantic-release', function() {
     expect(changelog).to.include('foo bar');
 
     commitFeat();
-    result = semanticRelease(`-r 0`);    // regenerate ALL releases (0 = all)
+    result = semanticRelease(`-r 0`); // regenerate ALL releases (0 = all)
     expect(result.code).to.be.equal(0);
 
     expectedGitTag('1.1.0');
@@ -425,7 +425,7 @@ describe('corp-semantic-release', function() {
   }
 
   function commitFeat() {
-    writeFileSync('feat.txt', counter++);    // Produce a unique change to the file
+    writeFileSync('feat.txt', counter++); // Produce a unique change to the file
     return commitWithMessage('feat: my first feature');
   }
 

@@ -102,7 +102,7 @@ async.series([
         // This function is called once ALL the object-chunks have been processed.
         data.push(null);
 
-        cb(null, data.join(''));    // Pass the data to the next stream processor
+        cb(null, data.join('')); // Pass the data to the next stream processor
       }))
       .pipe(contentStream);
   },
