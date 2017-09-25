@@ -2,12 +2,12 @@
 const expect = require('chai').expect;
 const rewire = require('rewire');
 const stdout = require('test-console').stdout;
-const validateBranch = rewire('../src/lib/validateBranch');   // NOTE: rewired!
+const validateBranch = rewire('../src/lib/validateBranch'); // NOTE: rewired!
 
 describe('validateBranch', () => {
   let revert = () => {};
 
-  afterEach(() => revert());    // revert the mocking of anything
+  afterEach(() => revert()); // revert the mocking of anything
 
   it('should show a message if the current branch is not the release branch and exit with 0', () => {
     let exitCode;

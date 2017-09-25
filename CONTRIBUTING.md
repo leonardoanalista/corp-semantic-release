@@ -120,10 +120,9 @@ Command | Description
 Command | Description
 :------ | :----------
 <pre>npm test</pre> | Alias for `npm run test:unit` task
-<pre>npm run test:coverage</pre> | Run instrumented unit tests then verify coverage meets defined thresholds<ul><li>Returns non-zero exit code when coverage does not meet thresholds (as defined in .nycrc)</li></ul>
-<pre>npm run test:unit</pre> | Run unit tests whenever JS source or tests change<ul><li>Uses Mocha</li><li>Runs continuously (best to run in a separate window)</li></ul>
-<pre>npm run test:unit:once</pre> | Run unit tests once<ul><li>Uses Mocha</li></ul>
-<pre>npm run test:unit:cover</pre> | Run unit tests once<ul><li>Uses Mocha</li><li>Code coverage</li></ul>
+<pre>npm run test:coverage</pre> | Run instrumented unit tests then verify coverage meets defined thresholds<ul><li>Returns non-zero exit code when coverage does not meet thresholds (as defined in istanbul.js)</li></ul>
+<pre>npm run test:unit</pre> | Run unit tests whenever JS source or tests change<ul><li>Uses Mocha</li><li>Code coverage</li><li>Runs continuously (best to run in a separate window)</li></ul>
+<pre>npm run test:unit:once</pre> | Run unit tests once<ul><li>Uses Mocha</li><li>Code coverage</li></ul>
 
 
 
