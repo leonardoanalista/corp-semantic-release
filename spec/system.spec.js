@@ -415,11 +415,6 @@ describe('corp-semantic-release', function() {
 
   // ####### Helpers ######
 
-  // function getBranchName() {
-  //   var branch = shell.exec('git branch').stdout;
-  //   return branch;
-  // }
-
   function semanticRelease(params) {
     return shell.exec(`node ${__dirname}/../src/index.js --mock-push 0 ${params || ''}`);
   }
