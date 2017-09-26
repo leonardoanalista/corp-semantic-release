@@ -44,6 +44,7 @@ describe('corp-semantic-release', function() {
     shell.cd(__dirname);
     shell.rm('-rf', tempDir);
     tempDir = null;
+    shell.cd('../'); // Navigate back to project root directory. If we don't do this, mocha-multi-reporters complains when it looks for its options file
   });
 
 
