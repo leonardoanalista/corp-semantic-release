@@ -462,7 +462,7 @@ describe('corp-semantic-release', function() {
   function expectedGitTag(expectedVersion) {
     // check for new commit
     let gitLog = shell.exec('git log | cat').stdout;
-    expect(gitLog).to.include(`chore(release): v${expectedVersion} [ci skip]`);
+    expect(gitLog).to.include(`chore(release): v${expectedVersion} [ci skip] ***NO_CI***`);
 
     let gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.include('v' + expectedVersion);
