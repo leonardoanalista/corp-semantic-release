@@ -10,6 +10,7 @@ notifications:
 node_js:
   - '4'
   - '6'
+  - '8'
   - 'node'
 before_install:
   - npm i -g npm@^3.0.0
