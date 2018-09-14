@@ -38,6 +38,7 @@ program
     ' is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')
   .option('-r, --releasecount [number]', 'How many releases of changelog you want to generate.', parseInt)
   .option('--mock-push [return code]', 'Used in testing to mock git push, the mock will return [return code]', parseInt)
+  .option('--tagPrefix [tagPrefix]', 'Tag prefix')
   .parse(process.argv);
 
 if (program.dryrun) {
@@ -48,13 +49,14 @@ program.branch = program.branch || 'master';
 program.changelogpreset = program.changelogpreset || 'angular';
 // Release count defaults to 1 (generate 1 release), but could be 0 (hence logic). See https://github.com/conventional-changelog/conventional-changelog-core#releasecount
 program.releasecount = (program.releasecount != undefined) ? program.releasecount : 1;
+program.tagPrefix = program.tagPrefix || '';
 
 let version;
 
 // ### STEP 0 - Validate branch
 lib.validateBranch(program.branch);
 // ### STEP 1 - Work out tags
-const latestTag = lib.getLatestTag(program.verbose);
+const latestTag = lib.getLatestTag(program.verbose, program.tagPrefix);
 // ### STEP 2 - Get Commits
 const jsonCommits = lib.getJsonCommits(latestTag);
 // ### STEP 3 - find out Bump type
@@ -65,7 +67,7 @@ if (!lib.isReleaseNecessary(bumpType, latestTag, jsonCommits, program.verbose)) 
 }
 
 // ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION - but we remember the old version and restore at the end)
-version = lib.bumpUpVersion(bumpType, latestTag);
+version = lib.bumpUpVersion(bumpType, latestTag, program.tagPrefix);
 
 async.series([
   // ### STEP 6 - get changelog contents

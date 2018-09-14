@@ -3,7 +3,7 @@ const helpers = require('./helpers');
 const shell = require('shelljs');
 const log = require('./log');
 
-module.exports = function bumpUpVersion(bumpType, latestTag) {
+module.exports = function bumpUpVersion(bumpType, latestTag, tagPrefix) {
   log.info('>>> update version on package.json...');
   let version = 'v1.0.0'; // First Release
 
@@ -17,6 +17,9 @@ module.exports = function bumpUpVersion(bumpType, latestTag) {
     log.error(error);
     helpers.terminateProcess(1);
   }
-
+  if (tagPrefix !== '') {
+    version = `${tagPrefix}${version}`;
+    console.log(version);
+  }
   return version;
 };

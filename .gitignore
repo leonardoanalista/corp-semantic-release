@@ -2,6 +2,7 @@
 node_modules/
 dist/
 reports/
+.idea/
 
 # Logs
 logs
