@@ -62,6 +62,7 @@ Of course you can change `corp-release` to any name you like.
 * `-v` or `--verbose`: it prints extra info such as commit list from last tag and command details.
 * `--changelogpreset [preset]`: The conventional-changelog preset to use. Default is `angular`. `angular-bitbucket` is available for [BitBucket repositories](https://github.com/uglow/conventional-changelog-angular-bitbucket). Other presets can be installed, e.g: `npm i conventional-changelog-jquery` then pass this flag to the command: `--changelogpreset jquery`.
 * `-r [num]` or `--releasecount [num]`: How many releases of changelog you want to generate. It counts from the upcoming release. Useful when you forgot to generate any previous changelog. Set to 0 to regenerate all (will overwrite any existing changelog!).
+* `--tagPrefix [tag name]`: Gives the tag version a prefix such as ALPHA 1.1.2.
 
 **NOTE**: If you run via `npm`, you have to add `--` before the options so npm passes all arguments to node. Eg.: `npm run corp-release -- -v -d`
 
