@@ -470,7 +470,8 @@ describe('corp-semantic-release', function() {
   const today = new Date().toISOString().substring(0, 10);
 
 
-  function expectedGitTag(expectedVersion, expectedPrefix = '') {
+  function expectedGitTag(expectedVersion, expectedPrefix) {
+    expectedPrefix = expectedPrefix || '';
     // check for new commit
     let gitLog = shell.exec('git log | cat').stdout;
     expect(gitLog).to.include(`chore(release): ${expectedPrefix}v${expectedVersion} [ci skip] ***NO_CI***`);
