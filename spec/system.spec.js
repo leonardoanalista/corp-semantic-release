@@ -79,6 +79,17 @@ describe('corp-semantic-release', function() {
     expectedVersionInPackageJson(expectedVersion);
   });
 
+  it('should allow a prefix tag with the --tagPrefix option', function() {
+    commitFeat();
+    const result = semanticRelease(`--tagPrefix beta-`);
+    expect(result.code).to.be.equal(0);
+
+    const expectedVersion = '1.0.0';
+    const expectedPrefix = 'beta-';
+
+    // check Semantic Tag
+    expectedGitTag(expectedVersion, expectedPrefix);
+  });
 
   it('should run pre-commit script and pass the version number to the npm script', function() {
     commitFeat();
@@ -459,13 +470,13 @@ describe('corp-semantic-release', function() {
   const today = new Date().toISOString().substring(0, 10);
 
 
-  function expectedGitTag(expectedVersion) {
+  function expectedGitTag(expectedVersion, expectedPrefix = '') {
     // check for new commit
     let gitLog = shell.exec('git log | cat').stdout;
-    expect(gitLog).to.include(`chore(release): v${expectedVersion} [ci skip] ***NO_CI***`);
+    expect(gitLog).to.include(`chore(release): ${expectedPrefix}v${expectedVersion} [ci skip] ***NO_CI***`);
 
     let gitTag = shell.exec('git tag | cat').stdout;
-    expect(gitTag).to.include('v' + expectedVersion);
+    expect(gitTag).to.include(expectedPrefix + 'v' + expectedVersion);
   }
 
   function expectedVersionInPackageJson(expectedVersion) {
