@@ -16,16 +16,11 @@ module.exports = function getLatestTag(verbose, prefix) {
     while (match = regex.exec(decorations)) { // eslint-disable-line no-cond-assign
       let tag = match[1];
       if (tag.startsWith(prefix)) {
-        const search = tag.replace(prefix, '');
-        console.log(search);
-        if (semverValid(search)) {
+        const semanticVersion = tag.replace(prefix, '');
+        if (semverValid(semanticVersion)) {
           latestTag = tag;
           return true;
         }
-      }
-      if (semverValid(tag)) {
-        latestTag = tag;
-        return true;
       }
     }
   });
