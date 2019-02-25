@@ -3,7 +3,7 @@ const terminateProcess = require('./helpers').terminateProcess;
 const shell = require('shelljs');
 const log = require('./log');
 
-module.exports = function addFilesAndCreateTag(newVersion, mockPush) {
+module.exports = function addFilesAndCreateTag(newVersion, mockPush, ci) {
   let code;
   // ###### Add edited files to git #####
   log.info('>>> About to add and commit package.json and CHANGELOG...');
@@ -11,7 +11,13 @@ module.exports = function addFilesAndCreateTag(newVersion, mockPush) {
   terminateProcess(code);
 
   // ###### Commit files #####
-  code = shell.exec('git commit -m "chore(release): ' + newVersion + ' [ci skip] ***NO_CI***"').code;
+  let commitMessage = 'git commit -m "chore(release): ' + newVersion;
+  if (!ci) {
+    commitMessage+= ' [ci skip] ***NO_CI***"';
+  } else {
+    commitMessage+= '"';
+  }
+  code = shell.exec(commitMessage).code;
   terminateProcess(code);
 
   // ###### TAG NEW VERSION #####
