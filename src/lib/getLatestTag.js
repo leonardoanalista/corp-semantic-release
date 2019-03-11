@@ -8,13 +8,13 @@ module.exports = function getLatestTag(verbose, prefix) {
 
   const regex = /tag:\s*(.+?)[,\)]/gi;
   const cmd = 'git log --date-order --tags --simplify-by-decoration --pretty=format:"%d"';
-  let data = shell.exec(cmd, {silent: true}).stdout;
+  const data = shell.exec(cmd, {silent: true}).stdout;
   let latestTag = null;
 
   data.split('\n').some(function(decorations) {
     let match;
     while (match = regex.exec(decorations)) { // eslint-disable-line no-cond-assign
-      let tag = match[1];
+      const tag = match[1];
       if (tag.startsWith(prefix)) {
         const semanticVersion = tag.replace(prefix, '');
         if (semverValid(semanticVersion)) {

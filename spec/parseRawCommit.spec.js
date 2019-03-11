@@ -12,7 +12,7 @@ describe('parseRawCommit', () => {
   it('should parse a "normal" feature commit', () => {
     const commit = `${HASH}\nfeat(scope): ${SUBJECT}\n\n${BODY}\n\n${FOOTER}`;
 
-    let msg = parseRawCommit(commit);
+    const msg = parseRawCommit(commit);
 
     expect(msg).not.equal(null);
     expect(msg.hash).to.equal(HASH);
@@ -25,7 +25,7 @@ describe('parseRawCommit', () => {
   it('should not parse a feature commit with a scope which contains a "/" to be consistent with other commit message parsing tools', () => {
     const commit = `${HASH}\nfeat(scope/foo): ${SUBJECT}\n\n${BODY}\n\n${FOOTER}`;
 
-    let msg = parseRawCommit(commit);
+    const msg = parseRawCommit(commit);
 
     expect(msg).to.equal(null);
   });
