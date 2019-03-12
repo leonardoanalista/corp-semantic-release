@@ -20,7 +20,7 @@ script:
 
 after_success:
   - npm run upload-coverage
-  - npm run semantic-release
+  - npm run travis-deploy-once "npm run semantic-release"
 
 branches:
   except:
