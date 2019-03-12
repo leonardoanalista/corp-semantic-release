@@ -9,11 +9,11 @@
   - after every test, temp dir and git repo are deleted.
 */
 
-let expect = require('chai').expect;
-let shell = require('shelljs');
-let fs = require('fs');
-let writeFileSync = fs.writeFileSync;
-let temp = require('temp').track();
+const expect = require('chai').expect;
+const shell = require('shelljs');
+const fs = require('fs');
+const writeFileSync = fs.writeFileSync;
+const temp = require('temp').track();
 
 let counter = 0; // Used to create unique content to trigger git changes, to trigger semver bumps.
 
@@ -71,7 +71,7 @@ describe('corp-semantic-release', function() {
     expectedGitTag(expectedVersion);
 
     // Verify CHANGELOG.md
-    let changelog = shell.exec('cat CHANGELOG.md').stdout;
+    const changelog = shell.exec('cat CHANGELOG.md').stdout;
     expect(changelog).to.include(`# ${expectedVersion} (${today})`);
     expect(changelog).to.include('### Features\n\n');
     expect(changelog).to.include('my first feature');
@@ -128,7 +128,7 @@ describe('corp-semantic-release', function() {
     expect(result.code).to.be.equal(0);
 
     // verify
-    let changelog = shell.exec('cat CHANGELOG.md').stdout;
+    const changelog = shell.exec('cat CHANGELOG.md').stdout;
 
     expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
     expect(changelog).to.include(`# [2.0.0](https://any.git.host/owner-name/repo-name/compare/v1.0.0...v${expectedVersion}) (${today})`);
@@ -153,7 +153,7 @@ describe('corp-semantic-release', function() {
     expect(result.code).to.be.equal(0);
 
     // verify
-    let changelog = shell.exec('cat CHANGELOG.md').stdout;
+    const changelog = shell.exec('cat CHANGELOG.md').stdout;
 
     expect(changelog).to.include('### BREAKING CHANGES\n\n* This should bump major');
     expect(changelog).to.include(`# [2.0.0](https://any.git.host/projects/owner-name/repos/repo-name/compare/diff?` +
@@ -473,15 +473,15 @@ describe('corp-semantic-release', function() {
   function expectedGitTag(expectedVersion, expectedPrefix) {
     expectedPrefix = expectedPrefix || '';
     // check for new commit
-    let gitLog = shell.exec('git log | cat').stdout;
+    const gitLog = shell.exec('git log | cat').stdout;
     expect(gitLog).to.include(`chore(release): ${expectedPrefix}v${expectedVersion} [ci skip] ***NO_CI***`);
 
-    let gitTag = shell.exec('git tag | cat').stdout;
+    const gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.include(expectedPrefix + 'v' + expectedVersion);
   }
 
   function expectedVersionInPackageJson(expectedVersion) {
-    let newVersion = require(tempDir + '/package.json').version;
+    const newVersion = require(tempDir + '/package.json').version;
     expect(newVersion).to.equal(expectedVersion);
   }
 });
