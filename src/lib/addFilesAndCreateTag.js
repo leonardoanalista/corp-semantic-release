@@ -11,7 +11,7 @@ module.exports = function addFilesAndCreateTag(newVersion, mockPush, ciSkip) {
   terminateProcess(code);
 
   // ###### Commit files #####
-  let commitMessage = 'git commit -m "chore(release): ' + newVersion
+  const commitMessage = 'git commit -m "chore(release): ' + newVersion
     + (ciSkip ? ' [ci skip] ***NO_CI***' : '') + '"';
   code = shell.exec(commitMessage).code;
   terminateProcess(code);
