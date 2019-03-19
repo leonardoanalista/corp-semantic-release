@@ -21,7 +21,7 @@ describe('validateBranch', () => {
       },
     });
 
-    let output = stdout.inspectSync(() => {
+    const output = stdout.inspectSync(() => {
       validateBranch('bar');
     });
 
@@ -39,7 +39,7 @@ describe('validateBranch', () => {
       },
     });
 
-    let output = stdout.inspectSync(() => {
+    const output = stdout.inspectSync(() => {
       validateBranch('fooBranch');
     });
 

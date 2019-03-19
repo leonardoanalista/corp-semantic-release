@@ -36,14 +36,14 @@
     "url": "https://github.com/leonardoanalista/corp-semantic-release.git"
   },
   "scripts": {
-    "pre-release": "npm-run-all verify test:coverage build ",
+    "pre-release": "npm-run-all verify test:coverage build",
     "_README": "echo Due to the fact the tests are executing in shell processes, we need to use NYC to get coverage information.",
     "build": "cross-env NODE_ENV=production npm run clean:prod",
     "clean:prod": "rimraf dist/",
     "commitmsg": "cz-customizable-ghooks",
     "dev": "cross-env NODE_ENV=development npm run verify:watch",
     "prepush": "npm-run-all verify test:coverage --silent",
-    "semantic-release": "semantic-release pre && npm publish && semantic-release post",
+    "semantic-release": "semantic-release",
     "start": "npm run dev",
     "test": "npm run test:unit",
     "test:check-coverage": "nyc check-coverage",
@@ -52,10 +52,11 @@
     "test:unit:once": "cross-env NODE_ENV=test nyc mocha --opts config/testUnit/mocha.opts",
     "upload-coverage": "cat reports/coverage/lcov.info | coveralls",
     "verify": "npm run verify:js --silent",
-    "verify:js": "eslint -c config/verify/.eslintrc.js \"src/**/*.js\" \"spec/**/*.js\" \"config/**/*.js\" && echo ✅ verify:js success",
-    "verify:js:fix": "eslint --fix -c config/verify/.eslintrc.js \"src/**/*.js\" \"spec/**/*.js\" \"config/**/*.js\" && echo ✅ verify:js:fix success",
-    "verify:js:watch": "chokidar 'src/**/*.js' 'spec/**/*.js' 'config/**/*.js' -c 'npm run verify:js:fix' --initial --silent",
-    "verify:watch": "npm run verify:js:watch --silent"
+    "verify:js": "eslint -c config/verify/.eslintrc.js \"src/**/*.js\" \"spec/**/*.js\" && echo ✅ verify:js success",
+    "verify:js:fix": "eslint --fix -c config/verify/.eslintrc.js \"src/**/*.js\" \"spec/**/*.js\" && echo ✅ verify:js:fix success",
+    "verify:js:watch": "chokidar 'src/**/*.js' 'spec/**/*.js' -c 'npm run verify:js:fix' --initial --silent",
+    "verify:watch": "npm run verify:js:watch --silent",
+    "travis-deploy-once": "travis-deploy-once"
   },
   "config": {
     "commitizen": {
@@ -66,41 +67,43 @@
     }
   },
   "dependencies": {
-    "async": "2.5.0",
-    "chalk": "1.1.3",
-    "commander": "2.9.0",
+    "async": "^2.6.2",
+    "chalk": "^2.4.2",
+    "commander": "^2.19.0",
     "conventional-changelog": "1.1.5",
-    "conventional-changelog-angular-bitbucket": "1.1.2",
+    "conventional-changelog-angular-bitbucket": "^1.2.0",
     "prepend-file": "1.3.1",
-    "semver": "5.3.0",
-    "shelljs": "0.7.7",
-    "temp": "0.8.3",
+    "semver": "^5.6.0",
+    "shelljs": "^0.8.3",
+    "temp": "^0.9.0",
     "through2": "2.0.3"
   },
   "devDependencies": {
-    "chai": "3.5.0",
-    "chokidar-cli": "1.2.0",
-    "coveralls": "2.13.1",
-    "cross-env": "5.0.5",
-    "cz-customizable": "5.2.0",
+    "travis-deploy-once": "^5.0.11",
+    "chai": "^4.2.0",
+    "chokidar-cli": "^1.2.2",
+    "coveralls": "^3.0.3",
+    "cross-env": "^5.2.0",
+    "cz-customizable": "^5.4.0",
     "cz-customizable-ghooks": "1.5.0",
-    "eslint": "4.5.0",
-    "eslint-config-google": "0.9.1",
-    "eslint-friendly-formatter": "3.0.0",
-    "eslint-plugin-node": "5.1.1",
-    "husky": "0.13.3",
-    "mocha": "3.5.3",
-    "mocha-junit-reporter": "1.13.0",
-    "mocha-multi-reporters": "1.1.5",
-    "npm-run-all": "4.0.2",
-    "nyc": "11.1.0",
-    "rewire": "2.5.2",
-    "rimraf": "2.6.1",
-    "semantic-release": "7.0.2",
-    "test-console": "1.0.0"
+    "eslint": "^5.15.1",
+    "eslint-config-google": "^0.12.0",
+    "eslint-friendly-formatter": "^4.0.1",
+    "eslint-plugin-node": "^8.0.1",
+    "husky": "^1.3.1",
+    "mocha": "^6.0.2",
+    "mocha-junit-reporter": "^1.18.0",
+    "mocha-multi-reporters": "^1.1.7",
+    "npm-run-all": "^4.1.5",
+    "nyc": "^13.3.0",
+    "rewire": "^4.0.1",
+    "rimraf": "^2.6.3",
+    "semantic-release": "^15.13.3",
+    "test-console": "^1.1.0"
   },
   "engines": {
     "node": ">= 4.0.0",
     "npm": ">= 2.0.0"
-  }
+  },
+  "version": "6.5.0"
 }

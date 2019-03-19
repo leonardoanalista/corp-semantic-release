@@ -7,9 +7,9 @@ const shell = require('shelljs');
 const program = require('commander');
 const fs = require('fs');
 const through = require('through2');
-let changelog = require('conventional-changelog');
-let async = require('async');
-let stream = require('stream');
+const changelog = require('conventional-changelog');
+const async = require('async');
+const stream = require('stream');
 
 
 try {
@@ -28,19 +28,18 @@ if (!pkg.name || !oldVersion) {
 }
 
 program
-  .version(oldVersion)
-  .option('--ci', 'Do not skip Continuous Integration in CI environment. This remove "[ci skip] ***NO_CI***" from commit message')
-  .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
-  .option('--pre-commit [npm-script]', 'Pre-commit hook. Pass the name of the npm script to run. It will run like this: npm run [pre-commit]')
-  .option('--post-success [command]', 'Post-success hook (after git push completes successfully). Pass a command to run as the argument. Eg: --post-success "npm publish"')
-  .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify. Use "*" to allow any branch')
-  .option('-v, --verbose', 'Prints debug info')
-  .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket' +
+    .version(oldVersion)
+    .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
+    .option('--pre-commit [npm-script]', 'Pre-commit hook. Pass the name of the npm script to run. It will run like this: npm run [pre-commit]')
+    .option('--post-success [command]', 'Post-success hook (after git push completes successfully). Pass a command to run as the argument. Eg: --post-success "npm publish"')
+    .option('-b, --branch [branch]', 'Branch name [branch] allowed to run release. Default is master. If you want another branch, you need to specify. Use "*" to allow any branch')
+    .option('-v, --verbose', 'Prints debug info')
+    .option('--changelogpreset [preset]', 'The conventional-changelog preset to use. Default is angular. angular-bitbucket' +
     ' is available for BitBucket repositories. Other presets can be installed: npm i conventional-changelog-jquery')
-  .option('-r, --releasecount [number]', 'How many releases of changelog you want to generate.', parseInt)
-  .option('--mock-push [return code]', 'Used in testing to mock git push, the mock will return [return code]', parseInt)
-  .option('--tagPrefix [tagPrefix]', 'Tag prefix')
-  .parse(process.argv);
+    .option('-r, --releasecount [number]', 'How many releases of changelog you want to generate.', parseInt)
+    .option('--mock-push [return code]', 'Used in testing to mock git push, the mock will return [return code]', parseInt)
+    .option('--tagPrefix [tagPrefix]', 'Tag prefix')
+    .parse(process.argv);
 
 if (program.dryrun) {
   log.announce('>> YOU ARE RUNNING IN DRY RUN MODE. NO CHANGES WILL BE MADE <<');
@@ -52,7 +51,6 @@ program.changelogpreset = program.changelogpreset || 'angular';
 program.releasecount = (program.releasecount != undefined) ? program.releasecount : 1;
 program.tagPrefix = program.tagPrefix || '';
 
-let version;
 
 // ### STEP 0 - Validate branch
 lib.validateBranch(program.branch);
@@ -68,13 +66,13 @@ if (!lib.isReleaseNecessary(bumpType, latestTag, jsonCommits, program.verbose)) 
 }
 
 // ### STEP 5 - bump version in package.json (DESTRUCTIVE OPERATION - but we remember the old version and restore at the end)
-version = lib.bumpUpVersion(bumpType, latestTag, program.tagPrefix);
+const version = lib.bumpUpVersion(bumpType, latestTag, program.tagPrefix);
 
 async.series([
   // ### STEP 6 - get changelog contents
   function(callback) {
-    let contentStream = new stream.Writable();
-    let data = [];
+    const contentStream = new stream.Writable();
+    const data = [];
 
     contentStream._write = function(chunk) {
       callback(null, chunk.toString());
@@ -83,31 +81,31 @@ async.series([
 
     // here we can add the options in the future:
     // (options, context, gitRawCommitsOpts, parserOpts, writerOpts);
-    let options = {
+    const options = {
       preset: program.changelogpreset,
       releaseCount: program.releasecount,
     };
     changelog(options)
-      // Use through() to handle multiple chunks which could be returned from changelog()
-      .pipe(through({
-        objectMode: true,
-      }, function(chunk, enc, cb) {
-        try {
-          data.push(chunk);
-        } catch (err) {
-          setImmediate(function() {
-            throw err;
-          });
-        }
+    // Use through() to handle multiple chunks which could be returned from changelog()
+        .pipe(through({
+          objectMode: true,
+        }, function(chunk, enc, cb) {
+          try {
+            data.push(chunk);
+          } catch (err) {
+            setImmediate(function() {
+              throw err;
+            });
+          }
 
-        cb();
-      }, function(cb) {
+          cb();
+        }, function(cb) {
         // This function is called once ALL the object-chunks have been processed.
-        data.push(null);
+          data.push(null);
 
-        cb(null, data.join('')); // Pass the data to the next stream processor
-      }))
-      .pipe(contentStream);
+          cb(null, data.join('')); // Pass the data to the next stream processor
+        }))
+        .pipe(contentStream);
   },
 ],
 function(err, results) {
@@ -135,7 +133,7 @@ function(err, results) {
 
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
   if (!program.dryrun) {
-    lib.addFilesAndCreateTag(version, program.mockPush, program.ci);
+    lib.addFilesAndCreateTag(version, program.mockPush);
   } else {
     log.info('>>> Skipping git push');
   }

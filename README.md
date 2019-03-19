@@ -8,7 +8,7 @@
 
 It has almost all expected features from [semantic-release](https://github.com/semantic-release/semantic-release) but will **not** publish to an NPM registry at the end.
 
-Obviously this project is **100%** inspired by semantic release. This module is **not** supposed to replace its parent. First try to use semantic-release. If you have special requirements under corporate network, then this module is made for you. Ironically this module uses semantic-release as I don't have any stupid network restrictions at my home.
+Obviously this project is **100%** inspired by semantic release. This module is **not** supposed to replace its parent. First try to use semantic-release. If you have special requirements under corporate network, then this module is made for you. Ironically this module uses semantic-release as I don't have any network restrictions at my home.
 
 
 [![NPM Version](https://img.shields.io/npm/v/corp-semantic-release.svg?style=flat-square)](http://npm.im/corp-semantic-release)
@@ -112,7 +112,6 @@ Please refer to the [Contributor Guidelines](https://github.com/angular/angular.
 
 ## TODO - Roadmap:
 * add option to create release on Enterprise GitHub using API v3. I am sure one day the corps will be using version 3.
-* Write functional code.
 
 ## FAQ
 
@@ -157,4 +156,5 @@ This is how I get things working. If you need further instructions on cntlm, sen
 This software is licensed under the MIT Licence. See [LICENSE](LICENSE).
 
 <!--[]-->
+
 
