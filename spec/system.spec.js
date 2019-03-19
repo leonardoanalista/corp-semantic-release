@@ -59,6 +59,16 @@ describe('corp-semantic-release', function() {
     expect(gitStatus).to.match(/nothing to commit, working (directory|tree) clean/);
   });
 
+  it('should remove add no-ci message when ci-skip parameter is false', function() {
+    commitFeat();
+    const result = semanticRelease(`--ci-skip false`);
+    expect(result.code).to.be.equal(0);
+
+    const expectedVersion = '1.0.0';
+
+    // check Semantic Tag
+    expectedGitTag(expectedVersion, undefined, false);
+  });
 
   it('should bump minor version, create CHANGELOG.md file and semantic tag correctly', function() {
     commitFeat();
@@ -470,11 +480,14 @@ describe('corp-semantic-release', function() {
   const today = new Date().toISOString().substring(0, 10);
 
 
-  function expectedGitTag(expectedVersion, expectedPrefix) {
+  function expectedGitTag(expectedVersion, expectedPrefix, ciSkip) {
     expectedPrefix = expectedPrefix || '';
+    ciSkip = ciSkip !== false;
+
     // check for new commit
     const gitLog = shell.exec('git log | cat').stdout;
-    expect(gitLog).to.include(`chore(release): ${expectedPrefix}v${expectedVersion} [ci skip] ***NO_CI***`);
+    expect(gitLog).to.include(`chore(release): ${expectedPrefix}v${expectedVersion}`
+      + (ciSkip ? ' [ci skip] ***NO_CI***' : ''));
 
     const gitTag = shell.exec('git tag | cat').stdout;
     expect(gitTag).to.include(expectedPrefix + 'v' + expectedVersion);

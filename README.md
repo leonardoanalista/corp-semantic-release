@@ -55,6 +55,7 @@ Of course you can change `corp-release` to any name you like.
 
 
 ## Options
+* `--ci-skip [boolean]`: Skip Continuous Integration in CI environment. This adds `[ci skip] ***NO_CI***` to the commit message. Default is `true`.
 * `-d` or `--dryrun`: it runs in non-destructive mode. No alteration should be done in your workspace.
 * `--pre-commit [npm-script]`: Pre-commit hook. Pass the name of the npm script to run. It will run like this: `npm run [npm-script]`.
 * `--post-success [command]`: Post-success hook (after `git push` completes successfully). Pass a command to run as the argument. Eg: `--post-success "npm publish"`.

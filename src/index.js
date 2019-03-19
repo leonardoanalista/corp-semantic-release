@@ -29,6 +29,7 @@ if (!pkg.name || !oldVersion) {
 
 program
     .version(oldVersion)
+    .option('--ci-skip [boolean]', 'Skip Continuous Integration in CI environment. This adds "[ci skip] ***NO_CI***" to the commit message. Default is true.')
     .option('-d, --dryrun', 'No changes to workspace. Stops after changelog is printed.')
     .option('--pre-commit [npm-script]', 'Pre-commit hook. Pass the name of the npm script to run. It will run like this: npm run [pre-commit]')
     .option('--post-success [command]', 'Post-success hook (after git push completes successfully). Pass a command to run as the argument. Eg: --post-success "npm publish"')
@@ -45,6 +46,7 @@ if (program.dryrun) {
   log.announce('>> YOU ARE RUNNING IN DRY RUN MODE. NO CHANGES WILL BE MADE <<');
 }
 
+program.ciSkip = program.ciSkip !== 'false';
 program.branch = program.branch || 'master';
 program.changelogpreset = program.changelogpreset || 'angular';
 // Release count defaults to 1 (generate 1 release), but could be 0 (hence logic). See https://github.com/conventional-changelog/conventional-changelog-core#releasecount
@@ -133,7 +135,7 @@ function(err, results) {
 
   // ### STEP 9 - Tag and push (DESTRUCTIVE OPERATION)
   if (!program.dryrun) {
-    lib.addFilesAndCreateTag(version, program.mockPush);
+    lib.addFilesAndCreateTag(version, program.mockPush, program.ciSkip);
   } else {
     log.info('>>> Skipping git push');
   }

@@ -3,6 +3,7 @@ node_modules/
 dist/
 reports/
 .idea/
+.vscode/
 
 # Logs
 logs
